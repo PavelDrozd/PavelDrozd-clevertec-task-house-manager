@@ -9,9 +9,13 @@ public interface AbstractRepository<K, T> {
 
     List<T> findAll();
 
+    List<T> findAll(int limit, int offset);
+
     Optional<T> findById(K id);
 
     T update(T t);
 
-    boolean deleteById(K id);
+    void deleteById(K id);
+
+    long count();
 }
