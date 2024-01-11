@@ -33,7 +33,8 @@ VALUES ((SELECT id FROM persons WHERE uuid = '03736b7f-3ca4-4af7-99ac-07628a7d8f
 		((SELECT id FROM persons WHERE uuid = '05242f3b-5e92-4ce4-a509-60c475dce50f'), (SELECT id FROM houses WHERE uuid = '63f0df3a-b447-4d76-ba8f-638b81a99b07')),
 		((SELECT id FROM persons WHERE uuid = '524fa37c-f2ed-4e08-b072-910708095e97'), (SELECT id FROM houses WHERE uuid = '2634cbbb-93cb-4d24-b84f-1123a529f4f5')),
 		((SELECT id FROM persons WHERE uuid = 'ea00be28-1ce2-48e4-b4b3-c0e98c258201'), (SELECT id FROM houses WHERE uuid = '8126ee0f-edad-41fc-b845-41061439c652')),
-		((SELECT id FROM persons WHERE uuid = 'fd839347-a17c-44f0-a8b7-77b53d8a652d'), (SELECT id FROM houses WHERE uuid = '78cdcc8d-07df-496b-86aa-65aadd4cfc77'));
+		((SELECT id FROM persons WHERE uuid = 'ea00be28-1ce2-48e4-b4b3-c0e98c258201'), (SELECT id FROM houses WHERE uuid = '8ca3955d-b436-471d-872f-f2ce07ac3f15')),
+		((SELECT id FROM persons WHERE uuid = 'fd839347-a17c-44f0-a8b7-77b53d8a652d'), (SELECT id FROM houses WHERE uuid = '8ca3955d-b436-471d-872f-f2ce07ac3f15'));
 
 INSERT INTO resident_house (person_id, house_id)
 VALUES ((SELECT id FROM persons WHERE uuid = '79e17dfd-a27d-45b6-8c72-a15538b8216e'), (SELECT id FROM houses WHERE uuid = 'ac602dde-9556-4ef5-954c-aeebc42c5056')),
@@ -45,4 +46,4 @@ VALUES ((SELECT id FROM persons WHERE uuid = '79e17dfd-a27d-45b6-8c72-a15538b821
 		((SELECT id FROM persons WHERE uuid = '524fa37c-f2ed-4e08-b072-910708095e97'), (SELECT id FROM houses WHERE uuid = '2634cbbb-93cb-4d24-b84f-1123a529f4f5')),
 		((SELECT id FROM persons WHERE uuid = '789c8c63-a58d-4e50-a4b4-33c15debfaf3'), (SELECT id FROM houses WHERE uuid = 'b99d623b-4b7e-4c89-afce-2bed07ceb9fc')),
 		((SELECT id FROM persons WHERE uuid = 'ea00be28-1ce2-48e4-b4b3-c0e98c258201'), (SELECT id FROM houses WHERE uuid = '8ca3955d-b436-471d-872f-f2ce07ac3f15')),
-		((SELECT id FROM persons WHERE uuid = 'fd839347-a17c-44f0-a8b7-77b53d8a652d'), (SELECT id FROM houses WHERE uuid = '78cdcc8d-07df-496b-86aa-65aadd4cfc77'));
+		((SELECT id FROM persons WHERE uuid = 'fd839347-a17c-44f0-a8b7-77b53d8a652d'), (SELECT id FROM houses WHERE uuid = '8ca3955d-b436-471d-872f-f2ce07ac3f15'));
