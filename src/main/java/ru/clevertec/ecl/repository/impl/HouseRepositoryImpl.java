@@ -11,6 +11,7 @@ import ru.clevertec.ecl.repository.HouseRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Repository
@@ -37,8 +38,6 @@ public class HouseRepositoryImpl implements HouseRepository {
         CriteriaQuery<House> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(House.class);
         criteriaQuery.from(House.class);
         return entityManager.createQuery(criteriaQuery).getResultList();
-//        return entityManager.createQuery(FIND_ALL_HOUSES, House.class)
-//                .getResultList();
     }
 
     @Override
@@ -51,7 +50,7 @@ public class HouseRepositoryImpl implements HouseRepository {
     }
 
     @Override
-    public Optional<House> findById(Long id) {
+    public Optional<House> findById(UUID id) {
         log.debug("REPOSITORY: FIND HOUSE BY ID: " + id);
         House house = entityManager.find(House.class, id);
         System.out.println(house);
@@ -65,7 +64,7 @@ public class HouseRepositoryImpl implements HouseRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         log.debug("REPOSITORY: DELETE HOUSE BY ID: " + id);
         entityManager.remove(id);
     }

@@ -4,12 +4,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.entity.Person;
 import ru.clevertec.ecl.repository.PersonRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Repository
@@ -21,6 +23,8 @@ public class PersonRepositoryImpl implements PersonRepository {
 
     @PersistenceContext
     private final EntityManager entityManager;
+
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Person create(Person person) {
@@ -46,8 +50,8 @@ public class PersonRepositoryImpl implements PersonRepository {
     }
 
     @Override
-    public Optional<Person> findById(Long id) {
-        log.debug("REPOSITORY: FIND PERSON BY ID: " + id);
+    public Optional<Person> findById(UUID id) {
+        log.debug("REPOSITORY: FIND PERSON BY UUID: " + id);
         return Optional.ofNullable(
                 entityManager.find(Person.class, id));
     }
@@ -59,8 +63,8 @@ public class PersonRepositoryImpl implements PersonRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
-        log.debug("REPOSITORY: DELETE PERSON BY ID: " + id);
+    public void deleteById(UUID id) {
+        log.debug("REPOSITORY: DELETE PERSON BY UUID: " + id);
         entityManager.remove(id);
     }
 
