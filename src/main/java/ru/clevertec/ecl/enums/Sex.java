@@ -1,6 +1,6 @@
 package ru.clevertec.ecl.enums;
 
-public enum Gender {
+public enum Sex {
 
     MALE, FEMALE
 }

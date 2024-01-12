@@ -26,6 +26,9 @@ ext {
     jacksonVersion = '2.16.0'
     slf4jVersion = '2.0.7'
     hibernateVersion = '6.4.1.Final'
+    hibernateValidatorVersion = '6.2.5.Final'
+    javaxValidationVersion = '2.0.1.Final'
+    javaxElVersion = '3.0.0'
     hikariCPVersion = '5.1.0'
     liquidbaseVersion = '4.25.1'
     aspectJVersion = '1.9.21'
@@ -45,6 +48,12 @@ dependencies {
     implementation "org.postgresql:postgresql:${postgresVersion}"
 
     implementation "org.hibernate.orm:hibernate-core:${hibernateVersion}"
+    implementation "org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}"
+
+    implementation "javax.validation:validation-api:${javaxValidationVersion}"
+
+    implementation "javax.el:javax.el-api:${javaxElVersion}"
+    implementation "org.glassfish:javax.el:${javaxElVersion}"
 
     implementation "com.zaxxer:HikariCP:${hikariCPVersion}"
 
@@ -71,6 +80,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.hibernate.validator:hibernate-validator-annotation-processor:${hibernateValidatorVersion}"
 }
 
 test {

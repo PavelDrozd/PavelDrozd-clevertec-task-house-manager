@@ -1,10 +1,10 @@
-package ru.clevertec.ecl.data;
+package ru.clevertec.ecl.data.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public record HouseDto(
+public record HouseResponse(
 
         UUID uuid,
 
@@ -18,8 +18,8 @@ public record HouseDto(
 
         String number,
 
-        LocalDateTime create_date,
+        LocalDateTime createDate,
 
-        List<PersonDto> owners
+        List<PersonResponse> owners
 ) {
 }

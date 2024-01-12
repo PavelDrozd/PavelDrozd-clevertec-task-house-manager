@@ -2,7 +2,8 @@ package ru.clevertec.ecl.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.clevertec.ecl.data.HouseDto;
+import ru.clevertec.ecl.data.request.HouseRequest;
+import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.service.HouseService;
 
@@ -10,7 +11,9 @@ import ru.clevertec.ecl.service.HouseService;
 public interface HouseMapper {
 
     @Mapping(target = "id", ignore = true)
-    House toHouse(HouseDto houseDto);
+    @Mapping(target = "createDate", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
+    House toHouse(HouseRequest houseRequest);
 
-    HouseDto toHouseDto(House house);
+    HouseResponse toHouseResponse(House house);
 }

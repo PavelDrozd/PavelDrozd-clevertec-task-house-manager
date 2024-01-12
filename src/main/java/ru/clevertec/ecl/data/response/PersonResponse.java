@@ -1,9 +1,12 @@
-package ru.clevertec.ecl.data;
+package ru.clevertec.ecl.data.response;
+
+import ru.clevertec.ecl.entity.House;
+import ru.clevertec.ecl.enums.Sex;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record PersonDto(
+public record PersonResponse(
 
         UUID uuid,
 
@@ -21,9 +24,6 @@ public record PersonDto(
 
         LocalDateTime updateDate,
 
-        HouseDto house
+        House house
 ) {
-    public enum Sex {
-        MALE, FEMALE
-    }
 }

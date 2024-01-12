@@ -2,15 +2,17 @@ package ru.clevertec.ecl.service;
 
 import java.util.List;
 
-public interface AbstractService<K, T> {
+public interface AbstractService<K, V, R> {
 
-    K create(T t);
+    R create(V v);
 
-    List<T> getAll();
+    List<R> getAll();
 
-    T getById(K id);
+    List<R> getAll(int limit, int offset);
 
-    T update(K id, T t);
+    R getById(K id);
 
-    void delete(K id);
+    R update(V v);
+
+    void deleteById(K id);
 }
