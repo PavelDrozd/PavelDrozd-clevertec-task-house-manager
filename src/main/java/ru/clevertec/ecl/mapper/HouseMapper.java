@@ -15,5 +15,6 @@ public interface HouseMapper {
     @Mapping(target = "deleted", ignore = true)
     House toHouse(HouseRequest houseRequest);
 
+    @Mapping(target = "owners", ignore = true)
     HouseResponse toHouseResponse(House house);
 }

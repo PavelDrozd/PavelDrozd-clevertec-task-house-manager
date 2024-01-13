@@ -2,10 +2,14 @@ package ru.clevertec.ecl.repository.impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.entity.Person;
 import ru.clevertec.ecl.repository.PersonRepository;
 
@@ -15,10 +19,12 @@ import java.util.UUID;
 
 @Slf4j
 @Repository
+@Transactional
 @RequiredArgsConstructor
 public class PersonRepositoryImpl implements PersonRepository {
 
     private static final String FIND_ALL_PERSONS = "from Person where deleted = false";
+    private static final String DELETE_PERSON_BY_ID = "UPDATE persons SET deleted = true WHERE id = ?";
     private static final String COUNT_PERSONS = "SELECT count(*) FROM persons p WHERE p.deleted = false";
 
     @PersistenceContext
@@ -52,8 +58,12 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public Optional<Person> findById(UUID id) {
         log.debug("REPOSITORY: FIND PERSON BY UUID: " + id);
-        return Optional.ofNullable(
-                entityManager.find(Person.class, id));
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Person> criteriaQuery = criteriaBuilder.createQuery(Person.class);
+        Root<Person> root = criteriaQuery.from(Person.class);
+        criteriaQuery.where(criteriaBuilder.equal(root.get("uuid"), id));
+        Person person = entityManager.createQuery(criteriaQuery).getSingleResult();
+        return Optional.ofNullable(person);
     }
 
     @Override
@@ -65,7 +75,7 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public void deleteById(UUID id) {
         log.debug("REPOSITORY: DELETE PERSON BY UUID: " + id);
-        entityManager.remove(id);
+        jdbcTemplate.update(DELETE_PERSON_BY_ID, id);
     }
 
     @Override
