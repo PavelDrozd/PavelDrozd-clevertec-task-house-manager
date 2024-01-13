@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 import ru.clevertec.ecl.entity.converter.PersonSexConverter;
+import ru.clevertec.ecl.entity.listener.PersonListener;
 import ru.clevertec.ecl.enums.Sex;
 
 import java.time.LocalDateTime;
@@ -33,6 +35,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
+@EntityListeners(PersonListener.class)
 @Table(name = "persons")
 public class Person {
 

@@ -1,5 +1,7 @@
 package ru.clevertec.ecl.data.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.enums.Sex;
 
@@ -20,10 +22,13 @@ public record PersonResponse(
 
         String passportNumber,
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
         LocalDateTime createDate,
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
         LocalDateTime updateDate,
 
+        @JsonIgnore
         House house
 ) {
 }

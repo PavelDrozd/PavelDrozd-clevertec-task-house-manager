@@ -1,7 +1,6 @@
 package ru.clevertec.ecl.data.request;
 
 
-import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.enums.Sex;
 
 import javax.validation.constraints.NotBlank;
@@ -35,6 +34,6 @@ public record PersonRequest(
         @Size(max = 8, message = "Passport number is too long.")
         String passportNumber,
 
-        House house
+        HouseRequest house
 ) {
 }

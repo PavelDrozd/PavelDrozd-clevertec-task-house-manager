@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS  houses (
 	city VARCHAR(30) NOT NULL,
 	street VARCHAR(50) NOT NULL,
 	"number" VARCHAR(10) NOT NULL,
-    create_date DATE NOT NULL,
+    create_date TIMESTAMP NOT NULL,
 	deleted boolean NOT NULL DEFAULT FALSE
 );
 
@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS  persons (
     sex_id INT4 NOT NULL REFERENCES sex,
     passport_series varchar(4) NOT NULL,
     passport_number varchar(8) NOT NULL,
-    create_date DATE NOT NULL,
-    update_date DATE NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP NOT NULL,
     house_id BIGINT NOT NULL REFERENCES houses,
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );

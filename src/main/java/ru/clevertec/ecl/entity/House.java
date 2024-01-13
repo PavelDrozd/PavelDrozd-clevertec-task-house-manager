@@ -3,6 +3,7 @@ package ru.clevertec.ecl.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
+import ru.clevertec.ecl.entity.listener.HouseListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
+@EntityListeners(HouseListener.class)
 @Table(name = "houses")
 public class House {
 
