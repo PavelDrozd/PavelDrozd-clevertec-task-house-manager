@@ -19,6 +19,7 @@ import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.pagination.Pagination;
 import ru.clevertec.ecl.service.HouseService;
+import ru.clevertec.ecl.validator.impl.HouseRequestValidator;
 
 import java.net.URI;
 import java.util.List;
@@ -32,6 +33,8 @@ public class HouseRestController {
     private final HouseService service;
 
     private final Pagination pagination;
+
+    private final HouseRequestValidator validator;
 
     @GetMapping("/{id}")
     public ResponseEntity<HouseResponse> get(@PathVariable UUID id) {
@@ -67,6 +70,7 @@ public class HouseRestController {
 
     @PostMapping
     public ResponseEntity<HouseResponse> create(@RequestBody HouseRequest houseRequest, Model model) {
+        validator.validate(houseRequest);
         HouseResponse house = service.create(houseRequest);
         model.addAttribute("house", house);
         return buildResponseHouse(house, HttpStatus.CREATED);
@@ -74,6 +78,7 @@ public class HouseRestController {
 
     @PutMapping
     public ResponseEntity<HouseResponse> update(@RequestBody HouseRequest houseRequest, Model model) {
+        validator.validate(houseRequest);
         HouseResponse house = service.update(houseRequest);
         model.addAttribute("house", house);
         return buildResponseHouse(house, HttpStatus.OK);

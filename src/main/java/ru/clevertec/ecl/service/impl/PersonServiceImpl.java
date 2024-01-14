@@ -14,7 +14,6 @@ import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 import ru.clevertec.ecl.repository.PersonRepository;
 import ru.clevertec.ecl.service.PersonService;
-import ru.clevertec.ecl.validator.impl.PersonRequestValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +37,6 @@ public class PersonServiceImpl implements PersonService {
     /** PersonMapper for mapping DTO and entity Person objects. */
     private final PersonMapper mapper;
 
-    /** PersonRequestValidator for validate accepted objects */
-    private final PersonRequestValidator validator;
-
     /**
      * Process PersonRequest object for create new Person entity and send it to repository,
      * then create PersonResponse object.
@@ -52,8 +48,6 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     public PersonResponse create(PersonRequest personRequest) {
         log.debug("SERVICE: CREATE PERSON: " + personRequest);
-        validator.validate(personRequest);
-
         UUID houseId = personRequest.house().uuid();
         House house = houseRepository.findById(houseId)
                 .orElseThrow(() -> NotFoundException.of(House.class, houseId));
@@ -117,18 +111,18 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     public PersonResponse update(PersonRequest personRequest) {
         log.debug("SERVICE: UPDATE PERSON: " + personRequest);
-        validator.validate(personRequest);
-
         UUID id = personRequest.uuid();
         Person exist = personRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.of(Person.class, id));
 
         if (isChanged(exist, personRequest)) {
-            return getById(personRequest.uuid());
+            return mapper.toPersonResponse(exist);
         }
         Person person = mergePerson(exist, personRequest);
         Person updated = personRepository.update(person);
-        return getById(updated.getUuid());
+        return mapper.toPersonResponse(
+                personRepository.findById(updated.getUuid())
+                        .orElseThrow(() -> NotFoundException.of(Person.class, id)));
     }
 
     /**

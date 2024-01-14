@@ -19,6 +19,7 @@ import ru.clevertec.ecl.data.request.PersonRequest;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.pagination.Pagination;
 import ru.clevertec.ecl.service.PersonService;
+import ru.clevertec.ecl.validator.impl.PersonRequestValidator;
 
 import java.net.URI;
 import java.util.List;
@@ -32,6 +33,8 @@ public class PersonRestController {
     private final PersonService service;
 
     private final Pagination pagination;
+
+    private final PersonRequestValidator validator;
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponse> get(@PathVariable UUID id) {
@@ -65,6 +68,7 @@ public class PersonRestController {
 
     @PostMapping
     public ResponseEntity<PersonResponse> create(@RequestBody PersonRequest personRequest, Model model) {
+        validator.validate(personRequest);
         PersonResponse person = service.create(personRequest);
         model.addAttribute("person", person);
         return buildResponsePerson(person, HttpStatus.CREATED);
@@ -72,6 +76,7 @@ public class PersonRestController {
 
     @PutMapping
     public ResponseEntity<PersonResponse> update(@RequestBody PersonRequest personRequest, Model model) {
+        validator.validate(personRequest);
         PersonResponse person = service.update(personRequest);
         model.addAttribute("person", person);
         return buildResponsePerson(person, HttpStatus.OK);

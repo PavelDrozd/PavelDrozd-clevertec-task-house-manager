@@ -2,11 +2,13 @@ package ru.clevertec.ecl.data.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.experimental.FieldNameConstants;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@FieldNameConstants
 public record HouseResponse(
 
         UUID uuid,

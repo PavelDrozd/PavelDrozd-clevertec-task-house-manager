@@ -11,7 +11,6 @@ import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.HouseMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 import ru.clevertec.ecl.service.HouseService;
-import ru.clevertec.ecl.validator.impl.HouseRequestValidator;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,9 +29,6 @@ public class HouseServiceImpl implements HouseService {
     /** HouseMapper for mapping DTO and entity House objects. */
     private final HouseMapper mapper;
 
-    /** HouseRequestValidator for validate accepted objects */
-    private final HouseRequestValidator validator;
-
     /**
      * Process HouseRequest object for create new House entity and send it to repository,
      * then create HouseResponse object.
@@ -44,8 +40,6 @@ public class HouseServiceImpl implements HouseService {
     @Transactional
     public HouseResponse create(HouseRequest houseRequest) {
         log.debug("SERVICE: CREATE HOUSE: " + houseRequest);
-        validator.validate(houseRequest);
-
         House house = mapper.toHouse(houseRequest);
         House saved = houseRepository.create(house);
         return mapper.toHouseResponse(saved);
@@ -98,8 +92,6 @@ public class HouseServiceImpl implements HouseService {
     @Transactional
     public HouseResponse update(HouseRequest houseRequest) {
         log.debug("SERVICE: UPDATE HOUSE: " + houseRequest);
-        validator.validate(houseRequest);
-
         UUID id = houseRequest.uuid();
         House exist = houseRepository.findById(id).orElseThrow(() -> NotFoundException.of(House.class, id));
 
