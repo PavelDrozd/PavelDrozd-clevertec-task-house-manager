@@ -25,6 +25,6 @@ public record HouseResponse(
         LocalDateTime createDate,
 
         @JsonIgnore
-        List<PersonResponse> owners
+        List<PersonResponse> residents
 ) {
 }

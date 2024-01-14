@@ -17,5 +17,5 @@ public interface AbstractRepository<K, T> {
 
     void deleteById(K id);
 
-    long count();
+    int count();
 }

@@ -9,6 +9,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
 import java.util.List;
 
 @Configuration
@@ -19,6 +21,13 @@ public class SpringWebConfig implements WebMvcConfigurer {
     public ObjectMapper objectMapper() {
         return new ObjectMapper()
                 .registerModule(new JavaTimeModule());
+    }
+
+    @Bean
+    public ValidatorFactory validatorFactory() {
+        try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
+            return validatorFactory;
+        }
     }
 
     @Override

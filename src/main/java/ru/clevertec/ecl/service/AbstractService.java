@@ -15,4 +15,6 @@ public interface AbstractService<K, V, R> {
     R update(V v);
 
     void deleteById(K id);
+
+    int count();
 }

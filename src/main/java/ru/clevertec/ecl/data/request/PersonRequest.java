@@ -6,6 +6,7 @@ import ru.clevertec.ecl.enums.Sex;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.UUID;
 
 public record PersonRequest(
@@ -34,6 +35,8 @@ public record PersonRequest(
         @Size(max = 8, message = "Passport number is too long.")
         String passportNumber,
 
-        HouseRequest house
+        HouseRequest house,
+
+        List<HouseRequest> houses
 ) {
 }

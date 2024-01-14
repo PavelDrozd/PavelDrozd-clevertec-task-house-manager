@@ -37,6 +37,6 @@ public record HouseRequest(
         @Size(max = 10, message = "Number is too long.")
         String number,
 
-        List<PersonRequest> owners
+        List<PersonRequest> residents
 ) {
 }

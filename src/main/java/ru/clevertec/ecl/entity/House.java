@@ -1,15 +1,12 @@
 package ru.clevertec.ecl.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,7 +65,6 @@ public class House {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "owner_house", joinColumns = {@JoinColumn(name = "house_id")}, inverseJoinColumns = {@JoinColumn(name = "person_id")})
-    private List<Person> owners;
+    @OneToMany(mappedBy = "house")
+    private List<Person> residents;
 }
