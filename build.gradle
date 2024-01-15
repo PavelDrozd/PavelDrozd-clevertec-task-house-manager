@@ -16,7 +16,7 @@ repositories {
 }
 
 ext {
-    springVersion= '6.1.2'
+    springVersion = '6.1.2'
     mapstructVersion = '1.5.5.Final'
     junitVersion = '5.9.2'
     assertJVersion = '3.24.2'
@@ -33,6 +33,7 @@ ext {
     liquidbaseVersion = '4.25.1'
     aspectJVersion = '1.9.21'
     jakartaServletVersion = '6.1.0-M1'
+    h2databaseVersion = '2.2.224'
 }
 
 dependencies {
@@ -73,6 +74,10 @@ dependencies {
     runtimeOnly "org.aspectj:aspectjweaver:${aspectJVersion}"
 
     compileOnly "jakarta.servlet:jakarta.servlet-api:${jakartaServletVersion}"
+
+    testImplementation "org.springframework:spring-test:${springVersion}"
+
+    testImplementation "com.h2database:h2:${h2databaseVersion}"
 
     testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
 

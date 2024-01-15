@@ -135,7 +135,7 @@ class PersonServiceImplTest {
     void update() {
         // given
         PersonRequest personRequest = PersonTestBuilder.builder()
-                .withPassportSeries("MP")
+                .withPassportSeries("Mc")
                 .build().buildPersonRequest();
         Person person = PersonTestBuilder.builder().build().buildPerson();
         House house = HouseTestBuilder.builder().build().buildHouse();

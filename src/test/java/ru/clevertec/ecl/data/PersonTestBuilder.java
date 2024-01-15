@@ -18,22 +18,22 @@ public class PersonTestBuilder {
     private Long id = 1L;
 
     @Builder.Default
-    private UUID uuid = UUID.fromString("b567881d-d421-4940-ab3f-6e57cabf56ab");
+    private UUID uuid = UUID.fromString("79e17dfd-a27d-45b6-8c72-a15538b8216e");
 
     @Builder.Default
-    private String name = "Евгений";
+    private String name = "Мария";
 
     @Builder.Default
-    private String surname = "Борисов";
+    private String surname = "Лазарева";
 
     @Builder.Default
-    private Sex sex = Sex.MALE;
+    private Sex sex = Sex.FEMALE;
 
     @Builder.Default
-    private String passportSeries = "MC";
+    private String passportSeries = "MP";
 
     @Builder.Default
-    private String passportNumber = "2321843";
+    private String passportNumber = "7332632";
 
     @Builder.Default
     private LocalDateTime createDate = LocalDateTime.of(
@@ -79,5 +79,60 @@ public class PersonTestBuilder {
 
     public List<PersonResponse> buildPersonResponseList() {
         return List.of(buildPersonResponse());
+    }
+
+    public Person buildPersonForCreate() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(null)
+                .withName("Евгений")
+                .withSurname("Борисов")
+                .withSex(Sex.MALE)
+                .withPassportSeries("MC")
+                .withPassportNumber("1234567")
+                .withCreateDate(null)
+                .withUpdateDate(null)
+                .withDeleted(false)
+                .withHouse(HouseTestBuilder.builder().build().buildHouseForCreate())
+                .withHouses(null)
+                .build().buildPerson();
+    }
+
+    public Person buildPersonForUpdate() {
+        return PersonTestBuilder.builder()
+                .withId(10L)
+                .withUuid(UUID.fromString("fd839347-a17c-44f0-a8b7-77b53d8a652d"))
+                .withName("Полина")
+                .withSurname("Леонова")
+                .withSex(Sex.FEMALE)
+                .withPassportSeries("MC")
+                .withPassportNumber("1593875")
+                .withCreateDate(LocalDateTime.of(
+                        2023, 12, 28, 7, 12, 15, 156))
+                .withUpdateDate(LocalDateTime.of(
+                        2023, 12, 28, 7, 12, 15, 156))
+                .withDeleted(false)
+                .withHouse(house)
+                .withHouses(List.of(house))
+                .build().buildPerson();
+    }
+
+    public Person buildPersonForDelete() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("789c8c63-a58d-4e50-a4b4-33c15debfaf3"))
+                .withName("Андрей")
+                .withSurname("Румянцев")
+                .withSex(Sex.MALE)
+                .withPassportSeries("MP")
+                .withPassportNumber("9474383")
+                .withCreateDate(LocalDateTime.of(
+                        2023, 9, 29, 6, 5, 15, 156))
+                .withUpdateDate(LocalDateTime.of(
+                        2023, 9, 29, 6, 5, 15, 156))
+                .withDeleted(false)
+                .withHouse(house)
+                .withHouses(null)
+                .build().buildPerson();
     }
 }

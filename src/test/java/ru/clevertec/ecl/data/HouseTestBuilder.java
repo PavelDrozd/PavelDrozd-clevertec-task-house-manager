@@ -17,7 +17,7 @@ public class HouseTestBuilder {
     private Long id = 1L;
 
     @Builder.Default
-    private UUID uuid = UUID.fromString("6332f244-6747-4afd-823e-d1454010bf45");
+    private UUID uuid = UUID.fromString("ac602dde-9556-4ef5-954c-aeebc42c5056");
 
     @Builder.Default
     private String area = "Минская область";
@@ -29,14 +29,14 @@ public class HouseTestBuilder {
     private String city = "Минск";
 
     @Builder.Default
-    private String street = "проспект Независимости";
+    private String street = "Разинская";
 
     @Builder.Default
-    private String number = "101";
+    private String number = "99";
 
     @Builder.Default
     private LocalDateTime createDate = LocalDateTime.of(
-            2024, 1, 1, 1, 1, 1, 111);
+            2024, 1, 3, 9, 12, 15, 156);
 
     @Builder.Default
     private boolean deleted = false;
@@ -66,5 +66,46 @@ public class HouseTestBuilder {
 
     public List<HouseResponse> buildHouseResponseList() {
         return List.of(buildHouseResponse());
+    }
+
+    public House buildHouseForCreate() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(null)
+                .withCountry("Беларусь")
+                .withArea("Гомельская область")
+                .withCity("Гомель")
+                .withStreet("Центральная")
+                .withNumber("1")
+                .withCreateDate(null)
+                .build().buildHouse();
+    }
+
+    public House buildHouseForUpdate() {
+        return HouseTestBuilder.builder()
+                .withId(10L)
+                .withUuid(UUID.fromString("78cdcc8d-07df-496b-86aa-65aadd4cfc77"))
+                .withCountry("Беларусь")
+                .withArea("Могилевская область")
+                .withCity("Могилев")
+                .withStreet("Петрозаводская")
+                .withNumber("3")
+                .withCreateDate(LocalDateTime.of(
+                        2023, 9, 29, 6, 5, 15, 156))
+                .build().buildHouse();
+    }
+
+    public House buildHouseForDelete() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("8ca3955d-b436-471d-872f-f2ce07ac3f15"))
+                .withCountry("Беларусь")
+                .withArea("Витебская область")
+                .withCity("Витебск")
+                .withStreet("Чкалова")
+                .withNumber("1")
+                .withCreateDate(LocalDateTime.of(
+                        2024, 1, 3, 9, 12, 15, 156))
+                .build().buildHouse();
     }
 }
