@@ -1,6 +1,6 @@
 database:
   driver: org.postgresql.Driver
-  url: jdbc:postgresql://localhost:5432/task_servlet
+  url: jdbc:postgresql://localhost:5432/house-manager
   user: postgres
   password: root
 hibernate:
