@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.web.errorhandler;
+package ru.clevertec.ecl.exception;
 
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.clevertec.ecl.data.error.ErrorDto;
-import ru.clevertec.ecl.exception.NotFoundException;
-import ru.clevertec.ecl.exception.ValidationException;
 
 @Slf4j
 @RestControllerAdvice("ru.clevertec.ecl.web.rest")

@@ -51,7 +51,9 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public Person create(Person person) {
         log.debug("REPOSITORY: CREATE PERSON: " + person);
+
         entityManager.persist(person);
+
         return person;
     }
 
@@ -63,6 +65,7 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public List<Person> findAll() {
         log.debug("REPOSITORY: FIND ALL PERSONS.");
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Person> criteriaQuery = criteriaBuilder.createQuery(Person.class);
         criteriaQuery.from(Person.class);
@@ -81,6 +84,7 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public List<Person> findAll(int limit, int offset) {
         log.debug("REPOSITORY: FIND ALL PERSONS WITH LIMIT: " + limit + " OFFSET: " + offset);
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Person> criteriaQuery = criteriaBuilder.createQuery(Person.class);
 
@@ -102,6 +106,7 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public Optional<Person> findById(UUID id) {
         log.debug("REPOSITORY: FIND PERSON BY UUID: " + id);
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Person> criteriaQuery = criteriaBuilder.createQuery(Person.class);
 
@@ -109,7 +114,8 @@ public class PersonRepositoryImpl implements PersonRepository {
         criteriaQuery.where((criteriaBuilder.equal(root.get("uuid"), id)),
                 criteriaBuilder.equal(root.get("deleted"), false));
 
-        Person person = entityManager.createQuery(criteriaQuery).getSingleResult();
+        Person person = entityManager.createQuery(criteriaQuery)
+                .getSingleResult();
         return Optional.ofNullable(person);
     }
 
@@ -122,6 +128,7 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public Person update(Person person) {
         log.debug("REPOSITORY: UPDATE PERSON: " + person);
+
         return entityManager.merge(person);
     }
 
@@ -133,6 +140,7 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public void deleteById(UUID id) {
         log.debug("REPOSITORY: DELETE PERSON BY UUID: " + id);
+
         jdbcTemplate.update(DELETE_PERSON_BY_ID, id);
     }
 
@@ -144,6 +152,7 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public int count() {
         log.debug("REPOSITORY: COUNT PERSONS.");
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
@@ -151,7 +160,8 @@ public class PersonRepositoryImpl implements PersonRepository {
         criteriaQuery.select(criteriaBuilder.count(root))
                 .where(criteriaBuilder.equal(root.get("deleted"), false));
 
-        return Math.toIntExact(entityManager.createQuery(criteriaQuery).getSingleResult());
+        return Math.toIntExact(entityManager.createQuery(criteriaQuery)
+                .getSingleResult());
     }
 
     /**
@@ -163,6 +173,7 @@ public class PersonRepositoryImpl implements PersonRepository {
     @Override
     public List<Person> findPersonsByHouseUuid(UUID id) {
         log.debug("REPOSITORY: FIND PERSONS BY HOUSE UUID: " + id);
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Person> criteriaQuery = criteriaBuilder.createQuery(Person.class);
         Root<House> houseRoot = criteriaQuery.from(House.class);
@@ -172,6 +183,7 @@ public class PersonRepositoryImpl implements PersonRepository {
                 .distinct(true)
                 .where(criteriaBuilder.equal(houseRoot.get("uuid"), id));
 
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        return entityManager.createQuery(criteriaQuery)
+                .getResultList();
     }
 }

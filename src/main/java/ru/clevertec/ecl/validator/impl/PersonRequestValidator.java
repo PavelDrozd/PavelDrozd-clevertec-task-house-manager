@@ -24,6 +24,5 @@ public class PersonRequestValidator implements ObjectValidator<PersonRequest> {
                 throw ValidationException.of(PersonRequest.class, violation.getMessage());
             }
         }
-
     }
 }

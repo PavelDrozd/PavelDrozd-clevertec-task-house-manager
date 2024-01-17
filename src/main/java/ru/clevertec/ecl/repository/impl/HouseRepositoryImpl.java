@@ -51,7 +51,9 @@ public class HouseRepositoryImpl implements HouseRepository {
     @Override
     public House create(House house) {
         log.debug("REPOSITORY: CREATE HOUSE: " + house);
+
         entityManager.persist(house);
+
         return house;
     }
 
@@ -63,8 +65,11 @@ public class HouseRepositoryImpl implements HouseRepository {
     @Override
     public List<House> findAll() {
         log.debug("REPOSITORY: FIND ALL HOUSES.");
-        CriteriaQuery<House> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(House.class);
+
+        CriteriaQuery<House> criteriaQuery = entityManager.getCriteriaBuilder()
+                .createQuery(House.class);
         criteriaQuery.from(House.class);
+
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
@@ -78,6 +83,7 @@ public class HouseRepositoryImpl implements HouseRepository {
     @Override
     public List<House> findAll(int limit, int offset) {
         log.debug("REPOSITORY: FIND ALL HOUSES WITH LIMIT: " + limit + " OFFSET: " + offset);
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<House> criteriaQuery = criteriaBuilder.createQuery(House.class);
 
@@ -100,6 +106,7 @@ public class HouseRepositoryImpl implements HouseRepository {
     @Override
     public Optional<House> findById(UUID id) {
         log.debug("REPOSITORY: FIND HOUSE BY UUID: " + id);
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<House> criteriaQuery = criteriaBuilder.createQuery(House.class);
 
@@ -107,7 +114,8 @@ public class HouseRepositoryImpl implements HouseRepository {
         criteriaQuery.where(criteriaBuilder.equal(root.get("uuid"), id),
                 criteriaBuilder.equal(root.get("deleted"), false));
 
-        House house = entityManager.createQuery(criteriaQuery).getSingleResult();
+        House house = entityManager.createQuery(criteriaQuery)
+                .getSingleResult();
         return Optional.ofNullable(house);
     }
 
@@ -120,6 +128,7 @@ public class HouseRepositoryImpl implements HouseRepository {
     @Override
     public House update(House house) {
         log.debug("REPOSITORY: UPDATE HOUSE: " + house);
+
         return entityManager.merge(house);
     }
 
@@ -131,6 +140,7 @@ public class HouseRepositoryImpl implements HouseRepository {
     @Override
     public void deleteById(UUID id) {
         log.debug("REPOSITORY: DELETE HOUSE BY ID: " + id);
+
         jdbcTemplate.update(DELETE_HOUSE_BY_ID, id);
     }
 
@@ -142,6 +152,7 @@ public class HouseRepositoryImpl implements HouseRepository {
     @Override
     public int count() {
         log.debug("REPOSITORY: COUNT HOUSES.");
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
@@ -149,7 +160,8 @@ public class HouseRepositoryImpl implements HouseRepository {
         criteriaQuery.select(criteriaBuilder.count(root))
                 .where(criteriaBuilder.equal(root.get("deleted"), false));
 
-        return Math.toIntExact(entityManager.createQuery(criteriaQuery).getSingleResult());
+        return Math.toIntExact(entityManager.createQuery(criteriaQuery)
+                .getSingleResult());
     }
 
     /**
@@ -161,12 +173,15 @@ public class HouseRepositoryImpl implements HouseRepository {
     @Override
     public List<House> findHousesByPersonUuid(UUID id) {
         log.debug("REPOSITORY: FIND HOUSES BY PERSON UUID: " + id);
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<House> criteriaQuery = criteriaBuilder.createQuery(House.class);
         Root<Person> personRoot = criteriaQuery.from(Person.class);
 
         Join<Person, House> ownersJoin = personRoot.join("houses", JoinType.INNER);
-        criteriaQuery.select(ownersJoin).distinct(true).where(criteriaBuilder.equal(personRoot.get("uuid"), id));
+        criteriaQuery.select(ownersJoin)
+                .distinct(true)
+                .where(criteriaBuilder.equal(personRoot.get("uuid"), id));
 
         return entityManager.createQuery(criteriaQuery).getResultList();
     }

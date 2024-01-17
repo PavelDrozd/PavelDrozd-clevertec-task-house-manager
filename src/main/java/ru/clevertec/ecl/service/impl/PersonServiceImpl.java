@@ -26,6 +26,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PersonServiceImpl implements PersonService {
 
     /** PersonRepository is used to get objects from repository module. */
@@ -184,8 +185,10 @@ public class PersonServiceImpl implements PersonService {
 
     private void setHouseToPerson(Person exist, PersonRequest personRequest, Person person) {
         HouseRequest houseRequest = personRequest.house();
+
         if (houseRequest == null) {
             person.setHouse(exist.getHouse());
+
         } else {
             House house = houseRepository.findById(houseRequest.uuid())
                     .orElseThrow(() -> NotFoundException.of(House.class, houseRequest.uuid()));
@@ -195,15 +198,18 @@ public class PersonServiceImpl implements PersonService {
 
     private void setHousesToPerson(Person exist, PersonRequest personRequest, Person person) {
         List<HouseRequest> houseRequests = personRequest.houses();
+
         List<House> houses = new ArrayList<>();
         if (houseRequests == null) {
             person.setHouses(exist.getHouses());
+
         } else {
             for (HouseRequest houseReq : houseRequests) {
                 houses.add(houseRepository.findById(houseReq.uuid())
                         .orElseThrow(() -> NotFoundException.of(House.class, houseReq.uuid())));
             }
         }
+
         person.setHouses(houses);
     }
 }

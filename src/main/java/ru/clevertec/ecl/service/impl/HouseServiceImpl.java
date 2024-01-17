@@ -21,6 +21,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class HouseServiceImpl implements HouseService {
 
     /** HouseRepository is used to get objects from repository module. */
@@ -40,8 +41,10 @@ public class HouseServiceImpl implements HouseService {
     @Transactional
     public HouseResponse create(HouseRequest houseRequest) {
         log.debug("SERVICE: CREATE HOUSE: " + houseRequest);
+
         House house = mapper.toHouse(houseRequest);
         House saved = houseRepository.create(house);
+
         return mapper.toHouseResponse(saved);
     }
 
@@ -53,7 +56,10 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public List<HouseResponse> getAll() {
         log.debug("SERVICE: GET ALL HOUSES.");
-        return houseRepository.findAll().stream().map(mapper::toHouseResponse).toList();
+
+        return houseRepository.findAll().stream()
+                .map(mapper::toHouseResponse)
+                .toList();
     }
 
     /**
@@ -66,7 +72,10 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public List<HouseResponse> getAll(int limit, int offset) {
         log.debug("SERVICE: GET ALL HOUSES WITH LIMIT: " + limit + " OFFSET: " + offset);
-        return houseRepository.findAll(limit, offset).stream().map(mapper::toHouseResponse).toList();
+
+        return houseRepository.findAll(limit, offset).stream()
+                .map(mapper::toHouseResponse)
+                .toList();
     }
 
     /**
@@ -78,7 +87,9 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public HouseResponse getById(UUID id) {
         log.debug("SERVICE: GET HOUSE BY UUID: " + id);
-        return houseRepository.findById(id).map(mapper::toHouseResponse)
+
+        return houseRepository.findById(id)
+                .map(mapper::toHouseResponse)
                 .orElseThrow(() -> NotFoundException.of(House.class, id));
     }
 
@@ -92,14 +103,18 @@ public class HouseServiceImpl implements HouseService {
     @Transactional
     public HouseResponse update(HouseRequest houseRequest) {
         log.debug("SERVICE: UPDATE HOUSE: " + houseRequest);
+
         UUID id = houseRequest.uuid();
-        House exist = houseRepository.findById(id).orElseThrow(() -> NotFoundException.of(House.class, id));
+        House exist = houseRepository.findById(id)
+                .orElseThrow(() -> NotFoundException.of(House.class, id));
 
         if (isChanged(exist, houseRequest)) {
             return getById(houseRequest.uuid());
         }
+
         House house = mergeHouse(exist, houseRequest);
         House updated = houseRepository.update(house);
+
         return mapper.toHouseResponse(house);
     }
 
@@ -111,6 +126,7 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public void deleteById(UUID id) {
         log.debug("SERVICE: DELETE HOUSE BY UUID: " + id);
+
         houseRepository.deleteById(id);
     }
 
@@ -122,6 +138,7 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public int count() {
         log.debug("SERVICE: COUNT HOUSES.");
+
         return houseRepository.count();
     }
 
@@ -134,7 +151,10 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public List<HouseResponse> getHousesByPersonUuid(UUID id) {
         log.debug("SERVICE: FIND HOUSES BY PERSON UUID: " + id);
-        return houseRepository.findHousesByPersonUuid(id).stream().map(mapper::toHouseResponse).toList();
+
+        return houseRepository.findHousesByPersonUuid(id).stream()
+                .map(mapper::toHouseResponse)
+                .toList();
     }
 
     private boolean isChanged(House exist, HouseRequest houseRequest) {
@@ -147,8 +167,10 @@ public class HouseServiceImpl implements HouseService {
 
     private House mergeHouse(House exist, HouseRequest houseRequest) {
         House house = mapper.toHouse(houseRequest);
+
         house.setId(exist.getId());
         house.setCreateDate(exist.getCreateDate());
+
         return house;
     }
 }

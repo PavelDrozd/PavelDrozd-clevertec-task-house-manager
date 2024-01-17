@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -94,14 +93,6 @@ public class DBConfig {
         hikariConfig.setPassword(DB_PASSWORD);
 
         return new HikariDataSource(hikariConfig);
-    }
-
-    @Bean
-    public SpringLiquibase liquibase(DataSource dataSource) {
-        SpringLiquibase liquibase = new SpringLiquibase();
-        liquibase.setChangeLog("classpath:db/changelog/v0.0/db.changelog-master.yml");
-        liquibase.setDataSource(dataSource);
-        return liquibase;
     }
 
     private Properties getHibernateProperties() {

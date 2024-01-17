@@ -9,7 +9,6 @@ import java.util.UUID;
 
 public record HouseRequest(
 
-
         UUID uuid,
 
         @NotBlank(message = "Country name is blank.")
