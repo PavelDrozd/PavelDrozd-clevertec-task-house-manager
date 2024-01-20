@@ -150,6 +150,13 @@ public class HouseServiceImpl implements HouseService {
                 .toList();
     }
 
+    @Override
+    public List<HouseResponse> getByNameMatches(String name) {
+        return houseRepository.findByNameMatches(name).stream()
+                .map(houseMapper::toHouseResponse)
+                .toList();
+    }
+
     private boolean isChanged(House exist, HouseRequest houseRequest) {
         return exist.getCountry().equals(houseRequest.country())
                && exist.getArea().equals(houseRequest.area())

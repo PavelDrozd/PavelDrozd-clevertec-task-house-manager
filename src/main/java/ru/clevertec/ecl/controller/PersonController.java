@@ -27,17 +27,17 @@ import java.util.UUID;
 @RequestMapping("/persons")
 public class PersonController {
 
-    private final PersonService service;
+    private final PersonService personService;
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponse> get(@PathVariable UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.getById(id));
+                .body(personService.getById(id));
     }
 
     @GetMapping
     public ResponseEntity<Page<PersonResponse>> getAll(Pageable pageable) {
-        Page<PersonResponse> persons = service.getAll(pageable);
+        Page<PersonResponse> persons = personService.getAll(pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(persons);
@@ -46,26 +46,32 @@ public class PersonController {
     @GetMapping("/{id}/houses")
     public ResponseEntity<List<HouseResponse>> getByPerson(@PathVariable UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.getHousesByPersonUuid(id));
+                .body(personService.getHousesByPersonUuid(id));
+    }
+
+    @GetMapping("/search/")
+    public ResponseEntity<List<PersonResponse>> getByNameMatches(@PathVariable String name){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(personService.getByNameMatches(name));
     }
 
     @PostMapping
     public ResponseEntity<PersonResponse> create(@RequestBody PersonRequest personRequest, Model model) {
-        PersonResponse person = service.create(personRequest);
+        PersonResponse person = personService.create(personRequest);
 
         return buildResponsePerson(person, HttpStatus.CREATED);
     }
 
     @PutMapping
     public ResponseEntity<PersonResponse> update(@RequestBody PersonRequest personRequest, Model model) {
-        PersonResponse person = service.update(personRequest);
+        PersonResponse person = personService.update(personRequest);
 
         return buildResponsePerson(person, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        service.deleteById(id);
+        personService.deleteById(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

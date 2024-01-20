@@ -156,6 +156,13 @@ public class PersonServiceImpl implements PersonService {
                 .toList();
     }
 
+    @Override
+    public List<PersonResponse> getByNameMatches(String name) {
+        return personRepository.findByNameMatches(name).stream()
+                .map(personMapper::toPersonResponse)
+                .toList();
+    }
+
     private boolean isChanged(Person exist, PersonRequest personRequest) {
         return exist.getName().equals(personRequest.name())
                && exist.getSurname().equals(personRequest.surname())

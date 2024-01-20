@@ -202,4 +202,23 @@ class PersonServiceImplTest {
         assertThat(actual)
                 .isEqualTo(expected);
     }
+
+    @Test
+    void getByNameMatchesShouldReturnExpectedHouseResponseList() {
+        // given
+        String name = PersonTestBuilder.builder().build().buildPerson().getPassportNumber();
+        PersonResponse personResponseToReturn = PersonTestBuilder.builder().build().buildPersonResponse();
+        List<Person> personsToReturn = PersonTestBuilder.builder().build().buildPersonList();
+        List<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponseList();
+
+        when(personRepository.findByNameMatches(name)).thenReturn(personsToReturn);
+        when(personMapper.toPersonResponse(any())).thenReturn(personResponseToReturn);
+
+        // when
+        List<PersonResponse> actual = personService.getByNameMatches(name);
+
+        // then
+        assertThat(actual)
+                .isEqualTo(expected);
+    }
 }

@@ -207,4 +207,23 @@ class HouseServiceImplTest {
         assertThat(actual)
                 .isEqualTo(expected);
     }
+
+    @Test
+    void getByNameMatchesShouldReturnExpectedHouseResponseList() {
+        // given
+        String name = HouseTestBuilder.builder().build().buildHouse().getStreet();
+        HouseResponse houseResponseToReturn = HouseTestBuilder.builder().build().buildHouseResponse();
+        List<House> housesToReturn = HouseTestBuilder.builder().build().buildHouseList();
+        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
+
+        when(houseRepository.findByNameMatches(name)).thenReturn(housesToReturn);
+        when(houseMapper.toHouseResponse(any())).thenReturn(houseResponseToReturn);
+
+        // when
+        List<HouseResponse> actual = houseService.getByNameMatches(name);
+
+        // then
+        assertThat(actual)
+                .isEqualTo(expected);
+    }
 }

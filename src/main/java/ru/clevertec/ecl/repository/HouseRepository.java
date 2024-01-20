@@ -17,6 +17,14 @@ public interface HouseRepository extends JpaRepository<House, Long> {
 
     @Query(value = "SELECT h.residents " +
                    "FROM House h " +
-                   "WHERE deleted = false AND h.uuid = :uuid")
+                   "WHERE h.uuid = :uuid")
     List<Person> findPersonsByHouseUuid(UUID uuid);
+
+    @Query("SELECT h " +
+           "FROM House h " +
+           "WHERE h.area LIKE %:name% " +
+           "OR h.country LIKE %:name% " +
+           "OR h.city LIKE %:name% " +
+           "OR h.street LIKE %:name%")
+    List<House> findByNameMatches(String name);
 }

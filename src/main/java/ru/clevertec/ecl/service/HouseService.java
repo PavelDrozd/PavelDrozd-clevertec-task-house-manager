@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface HouseService extends AbstractService<UUID, HouseRequest, HouseResponse> {
 
     List<PersonResponse> getPersonsByHouseUuid(UUID id);
+
+    List<HouseResponse> getByNameMatches(String name);
 }

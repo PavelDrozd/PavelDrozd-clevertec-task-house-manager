@@ -26,17 +26,17 @@ import java.util.UUID;
 @RequestMapping("/houses")
 public class HouseController {
 
-    private final HouseService service;
+    private final HouseService houseService;
 
     @GetMapping("/{id}")
     public ResponseEntity<HouseResponse> get(@PathVariable UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.getById(id));
+                .body(houseService.getById(id));
     }
 
     @GetMapping
     public ResponseEntity<Page<HouseResponse>> getAll(Pageable pageable) {
-        Page<HouseResponse> houses = service.getAll(pageable);
+        Page<HouseResponse> houses = houseService.getAll(pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(houses);
@@ -45,26 +45,32 @@ public class HouseController {
     @GetMapping("/{id}/persons")
     public ResponseEntity<List<PersonResponse>> getByHouse(@PathVariable UUID id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.getPersonsByHouseUuid(id));
+                .body(houseService.getPersonsByHouseUuid(id));
+    }
+
+    @GetMapping("/search/{name}")
+    public ResponseEntity<List<HouseResponse>> getByNameMatches(@PathVariable String name) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(houseService.getByNameMatches(name));
     }
 
     @PostMapping
     public ResponseEntity<HouseResponse> create(@RequestBody HouseRequest houseRequest) {
-        HouseResponse house = service.create(houseRequest);
+        HouseResponse house = houseService.create(houseRequest);
 
         return buildResponseHouse(house, HttpStatus.CREATED);
     }
 
     @PutMapping
     public ResponseEntity<HouseResponse> update(@RequestBody HouseRequest houseRequest) {
-        HouseResponse house = service.update(houseRequest);
+        HouseResponse house = houseService.update(houseRequest);
 
         return buildResponseHouse(house, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        service.deleteById(id);
+        houseService.deleteById(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
