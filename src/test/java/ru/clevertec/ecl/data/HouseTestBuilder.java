@@ -1,6 +1,8 @@
 package ru.clevertec.ecl.data;
 
 import lombok.Builder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.entity.House;
@@ -39,13 +41,10 @@ public class HouseTestBuilder {
             2024, 1, 3, 9, 12, 15, 156);
 
     @Builder.Default
-    private boolean deleted = false;
-
-    @Builder.Default
     private List<Person> residents = null;
 
     public House buildHouse() {
-        return new House(id, uuid, area, country, city, street, number, createDate, deleted, null);
+        return new House(id, uuid, area, country, city, street, number, createDate, null);
     }
 
     public HouseRequest buildHouseRequest() {
@@ -60,12 +59,20 @@ public class HouseTestBuilder {
         return List.of(buildHouse());
     }
 
+    public Page<House> buildHousePage() {
+        return new PageImpl<>(buildHouseList());
+    }
+
     public List<HouseRequest> buildHouseRequestList() {
         return List.of(buildHouseRequest());
     }
 
     public List<HouseResponse> buildHouseResponseList() {
         return List.of(buildHouseResponse());
+    }
+
+    public Page<HouseResponse> buildHouseResponsePage() {
+        return new PageImpl<>(buildHouseResponseList());
     }
 
     public House buildHouseForCreate() {

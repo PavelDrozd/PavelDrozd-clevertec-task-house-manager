@@ -2,13 +2,17 @@ package ru.clevertec.ecl.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
+import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.HouseMapper;
+import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 import ru.clevertec.ecl.service.HouseService;
 
@@ -28,7 +32,10 @@ public class HouseServiceImpl implements HouseService {
     private final HouseRepository houseRepository;
 
     /** HouseMapper for mapping DTO and entity House objects. */
-    private final HouseMapper mapper;
+    private final HouseMapper houseMapper;
+
+    /** PersonMapper for mapping DTO and entity Person objects. */
+    private final PersonMapper personMapper;
 
     /**
      * Process HouseRequest object for create new House entity and send it to repository,
@@ -42,10 +49,10 @@ public class HouseServiceImpl implements HouseService {
     public HouseResponse create(HouseRequest houseRequest) {
         log.debug("SERVICE: CREATE HOUSE: " + houseRequest);
 
-        House house = mapper.toHouse(houseRequest);
-        House saved = houseRepository.create(house);
+        House house = houseMapper.toHouse(houseRequest);
+        House saved = houseRepository.save(house);
 
-        return mapper.toHouseResponse(saved);
+        return houseMapper.toHouseResponse(saved);
     }
 
     /**
@@ -58,24 +65,22 @@ public class HouseServiceImpl implements HouseService {
         log.debug("SERVICE: GET ALL HOUSES.");
 
         return houseRepository.findAll().stream()
-                .map(mapper::toHouseResponse)
+                .map(houseMapper::toHouseResponse)
                 .toList();
     }
 
     /**
      * Get all House entities from repository paginated with limit and offset, then return as HouseResponse.
      *
-     * @param limit  expected integer value of limit.
-     * @param offset expected integer value of offset.
+     * @param pageable expected object type of Pageable.
      * @return List of HouseResponse objects.
      */
     @Override
-    public List<HouseResponse> getAll(int limit, int offset) {
-        log.debug("SERVICE: GET ALL HOUSES WITH LIMIT: " + limit + " OFFSET: " + offset);
+    public Page<HouseResponse> getAll(Pageable pageable) {
+        log.debug("SERVICE: GET ALL HOUSES WITH PAGEABLE: " + pageable);
 
-        return houseRepository.findAll(limit, offset).stream()
-                .map(mapper::toHouseResponse)
-                .toList();
+        return houseRepository.findAll(pageable)
+                .map(houseMapper::toHouseResponse);
     }
 
     /**
@@ -88,8 +93,8 @@ public class HouseServiceImpl implements HouseService {
     public HouseResponse getById(UUID id) {
         log.debug("SERVICE: GET HOUSE BY UUID: " + id);
 
-        return houseRepository.findById(id)
-                .map(mapper::toHouseResponse)
+        return houseRepository.findByUuid(id)
+                .map(houseMapper::toHouseResponse)
                 .orElseThrow(() -> NotFoundException.of(House.class, id));
     }
 
@@ -105,7 +110,7 @@ public class HouseServiceImpl implements HouseService {
         log.debug("SERVICE: UPDATE HOUSE: " + houseRequest);
 
         UUID id = houseRequest.uuid();
-        House exist = houseRepository.findById(id)
+        House exist = houseRepository.findByUuid(id)
                 .orElseThrow(() -> NotFoundException.of(House.class, id));
 
         if (isChanged(exist, houseRequest)) {
@@ -113,9 +118,9 @@ public class HouseServiceImpl implements HouseService {
         }
 
         House house = mergeHouse(exist, houseRequest);
-        House updated = houseRepository.update(house);
+        House updated = houseRepository.save(house);
 
-        return mapper.toHouseResponse(house);
+        return houseMapper.toHouseResponse(house);
     }
 
     /**
@@ -127,19 +132,7 @@ public class HouseServiceImpl implements HouseService {
     public void deleteById(UUID id) {
         log.debug("SERVICE: DELETE HOUSE BY UUID: " + id);
 
-        houseRepository.deleteById(id);
-    }
-
-    /**
-     * Count all entities in repository and return it as Integer.
-     *
-     * @return Integer value of objects being counted.
-     */
-    @Override
-    public int count() {
-        log.debug("SERVICE: COUNT HOUSES.");
-
-        return houseRepository.count();
+        houseRepository.deleteByUuid(id);
     }
 
     /**
@@ -149,11 +142,11 @@ public class HouseServiceImpl implements HouseService {
      * @return List of HouseResponse objects.
      */
     @Override
-    public List<HouseResponse> getHousesByPersonUuid(UUID id) {
+    public List<PersonResponse> getPersonsByHouseUuid(UUID id) {
         log.debug("SERVICE: FIND HOUSES BY PERSON UUID: " + id);
 
-        return houseRepository.findHousesByPersonUuid(id).stream()
-                .map(mapper::toHouseResponse)
+        return houseRepository.findPersonsByHouseUuid(id).stream()
+                .map(personMapper::toPersonResponse)
                 .toList();
     }
 
@@ -166,7 +159,7 @@ public class HouseServiceImpl implements HouseService {
     }
 
     private House mergeHouse(House exist, HouseRequest houseRequest) {
-        House house = mapper.toHouse(houseRequest);
+        House house = houseMapper.toHouse(houseRequest);
 
         house.setId(exist.getId());
         house.setCreateDate(exist.getCreateDate());

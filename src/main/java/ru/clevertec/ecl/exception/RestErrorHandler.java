@@ -3,6 +3,7 @@ package ru.clevertec.ecl.exception;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,36 +15,56 @@ public class RestErrorHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorDto error(Exception e) {
+    public ResponseEntity<ErrorDto> error(Exception e) {
         log.error(e.getMessage(), e);
-        return new ErrorDto(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        return ResponseEntity.status(httpStatus)
+                .body(new ErrorDto(httpStatus));
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorDto notFound(NotFoundException e) {
+    public ResponseEntity<ErrorDto> notFound(NotFoundException e) {
         log.error(e.getMessage(), e);
-        return new ErrorDto(HttpStatus.NOT_FOUND);
+
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+
+        return ResponseEntity.status(httpStatus)
+                .body(new ErrorDto(httpStatus));
     }
 
     @ExceptionHandler(NoResultException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorDto notFound(NoResultException e) {
+    public ResponseEntity<ErrorDto> notFound(NoResultException e) {
         log.error(e.getMessage(), e);
-        return new ErrorDto(HttpStatus.NOT_FOUND);
+
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+
+        return ResponseEntity.status(httpStatus)
+                .body(new ErrorDto(httpStatus));
     }
 
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto validationException(ValidationException e) {
+    public ResponseEntity<ErrorDto> validationException(ValidationException e) {
         log.error(e.getMessage(), e);
-        return new ErrorDto(HttpStatus.BAD_REQUEST);
+
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity.status(httpStatus)
+                .body(new ErrorDto(httpStatus));
     }
 
-    @ExceptionHandler(javax.validation.ValidationException.class)
+    @ExceptionHandler(jakarta.validation.ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto validationException(javax.validation.ValidationException e) {
+    public ResponseEntity<ErrorDto> validationException(jakarta.validation.ValidationException e) {
         log.error(e.getMessage(), e);
-        return new ErrorDto(HttpStatus.BAD_REQUEST);
+
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity.status(httpStatus)
+                .body(new ErrorDto(httpStatus));
     }
 }

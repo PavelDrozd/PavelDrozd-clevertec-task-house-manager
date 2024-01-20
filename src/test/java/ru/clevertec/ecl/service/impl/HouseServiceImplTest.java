@@ -7,13 +7,18 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.data.HouseTestBuilder;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
+import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
+import ru.clevertec.ecl.entity.Person;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.HouseMapper;
+import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 
 import java.util.List;
@@ -35,6 +40,9 @@ class HouseServiceImplTest {
     @Mock
     private HouseMapper houseMapper;
 
+    @Mock
+    private PersonMapper personMapper;
+
     @InjectMocks
     private HouseServiceImpl houseService;
 
@@ -50,7 +58,7 @@ class HouseServiceImplTest {
         HouseResponse expected = HouseTestBuilder.builder().build().buildHouseResponse();
 
         when(houseMapper.toHouse(houseRequest)).thenReturn(house);
-        when(houseRepository.create(house)).thenReturn(house);
+        when(houseRepository.save(house)).thenReturn(house);
         when(houseMapper.toHouseResponse(house)).thenReturn(houseResponse);
 
         // when
@@ -86,17 +94,17 @@ class HouseServiceImplTest {
     @Test
     void getAllPaginatedShouldReturnSameElementsAsExpected() {
         // given
-        int limit = 1;
-        int offset = 0;
-        List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
+        int pageSize = 1;
+        Page<House> houses = HouseTestBuilder.builder().build().buildHousePage();
+        Pageable pageable = Pageable.ofSize(pageSize);
         HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
+        Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
 
-        when(houseRepository.findAll(limit, offset)).thenReturn(houses);
+        when(houseRepository.findAll(Pageable.unpaged())).thenReturn(houses);
         when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
 
         // when
-        List<HouseResponse> actual = houseService.getAll(limit, offset);
+        Page<HouseResponse> actual = houseService.getAll(Pageable.unpaged());
 
         // then
         assertThat(actual)
@@ -110,7 +118,7 @@ class HouseServiceImplTest {
         UUID uuid = house.getUuid();
         HouseResponse expected = HouseTestBuilder.builder().build().buildHouseResponse();
 
-        when(houseRepository.findById(uuid)).thenReturn(Optional.of(house));
+        when(houseRepository.findByUuid(uuid)).thenReturn(Optional.of(house));
         when(houseMapper.toHouseResponse(house)).thenReturn(expected);
 
         // when
@@ -149,14 +157,14 @@ class HouseServiceImplTest {
         House expected = HouseTestBuilder.builder().build().buildHouse();
 
         when(houseMapper.toHouse(houseRequest)).thenReturn(house);
-        when(houseRepository.findById(house.getUuid())).thenReturn(Optional.of(house));
+        when(houseRepository.findByUuid(house.getUuid())).thenReturn(Optional.of(house));
 
         // when
         houseService.update(houseRequest);
 
         // then
         verify(houseRepository)
-                .update(houseCaptor.capture());
+                .save(houseCaptor.capture());
         House actual = houseCaptor.getValue();
 
         assertThat(actual)
@@ -178,36 +186,22 @@ class HouseServiceImplTest {
         houseService.deleteById(uuid);
 
         // then
-        verify(houseRepository).deleteById(uuid);
+        verify(houseRepository).deleteByUuid(uuid);
     }
 
     @Test
-    void countShouldReturnExpectedValue() {
+    void getPersonsByHouseUuid() {
         // given
-        Integer expected = 100;
-        when(houseRepository.count()).thenReturn(100);
+        UUID uuid = HouseTestBuilder.builder().build().buildHouse().getUuid();
+        List<Person> persons = PersonTestBuilder.builder().build().buildPersonList();
+        PersonResponse personResponse = PersonTestBuilder.builder().build().buildPersonResponse();
+        List<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponseList();
+
+        when(houseRepository.findPersonsByHouseUuid(uuid)).thenReturn(persons);
+        when(personMapper.toPersonResponse(any())).thenReturn(personResponse);
 
         // when
-        Integer actual = houseService.count();
-
-        // then
-        assertThat(actual)
-                .isEqualTo(expected);
-    }
-
-    @Test
-    void getHousesByPersonUuid() {
-        // given
-        UUID uuid = PersonTestBuilder.builder().build().buildPerson().getUuid();
-        List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
-        HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
-
-        when(houseRepository.findHousesByPersonUuid(uuid)).thenReturn(houses);
-        when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
-
-        // when
-        List<HouseResponse> actual = houseService.getHousesByPersonUuid(uuid);
+        List<PersonResponse> actual = houseService.getPersonsByHouseUuid(uuid);
 
         //then
         assertThat(actual)

@@ -1,6 +1,8 @@
 package ru.clevertec.ecl.data;
 
 import lombok.Builder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import ru.clevertec.ecl.data.request.PersonRequest;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
@@ -44,16 +46,13 @@ public class PersonTestBuilder {
             2024, 2, 2, 2, 2, 2, 222);
 
     @Builder.Default
-    private boolean deleted = false;
-
-    @Builder.Default
     private House house = HouseTestBuilder.builder().build().buildHouse();
 
     @Builder.Default
     private List<House> houses = List.of(HouseTestBuilder.builder().build().buildHouse());
 
     public Person buildPerson() {
-        return new Person(id, uuid, name, surname, sex, passportSeries, passportNumber, createDate, updateDate, deleted,
+        return new Person(id, uuid, name, surname, sex, passportSeries, passportNumber, createDate, updateDate,
                 house, houses);
     }
 
@@ -73,12 +72,20 @@ public class PersonTestBuilder {
         return List.of(buildPerson());
     }
 
+    public Page<Person> buildPersonPage() {
+        return new PageImpl<>(buildPersonList());
+    }
+
     public List<PersonRequest> buildPersonRequestList() {
         return List.of(buildPersonRequest());
     }
 
     public List<PersonResponse> buildPersonResponseList() {
         return List.of(buildPersonResponse());
+    }
+
+    public Page<PersonResponse> buildPersonResponsePage() {
+        return new PageImpl<>(buildPersonResponseList());
     }
 
     public Person buildPersonForCreate() {
@@ -92,7 +99,6 @@ public class PersonTestBuilder {
                 .withPassportNumber("1234567")
                 .withCreateDate(null)
                 .withUpdateDate(null)
-                .withDeleted(false)
                 .withHouse(HouseTestBuilder.builder().build().buildHouseForCreate())
                 .withHouses(null)
                 .build().buildPerson();
@@ -111,7 +117,6 @@ public class PersonTestBuilder {
                         2023, 12, 28, 7, 12, 15, 156))
                 .withUpdateDate(LocalDateTime.of(
                         2023, 12, 28, 7, 12, 15, 156))
-                .withDeleted(false)
                 .withHouse(house)
                 .withHouses(List.of(house))
                 .build().buildPerson();
@@ -130,7 +135,6 @@ public class PersonTestBuilder {
                         2023, 9, 29, 6, 5, 15, 156))
                 .withUpdateDate(LocalDateTime.of(
                         2023, 9, 29, 6, 5, 15, 156))
-                .withDeleted(false)
                 .withHouse(house)
                 .withHouses(null)
                 .build().buildPerson();

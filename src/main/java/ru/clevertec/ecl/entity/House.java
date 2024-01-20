@@ -60,11 +60,8 @@ public class House {
     @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
 
-    @Column(name = "deleted", nullable = false)
-    private boolean deleted;
-
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "house")
+    @OneToMany(mappedBy = "residentHouse")
     private List<Person> residents;
 }

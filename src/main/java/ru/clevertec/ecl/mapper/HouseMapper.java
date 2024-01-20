@@ -13,9 +13,8 @@ public interface HouseMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createDate", ignore = true)
-    @Mapping(target = "deleted", ignore = true)
     House toHouse(HouseRequest houseRequest);
 
-    @Mapping(target = "residents", ignore = true)
+    @Mapping(target = "residentsResponse", ignore = true)
     HouseResponse toHouseResponse(House house);
 }
