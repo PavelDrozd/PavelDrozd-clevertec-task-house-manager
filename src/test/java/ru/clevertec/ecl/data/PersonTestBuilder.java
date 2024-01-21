@@ -46,14 +46,14 @@ public class PersonTestBuilder {
             2024, 2, 2, 2, 2, 2, 222);
 
     @Builder.Default
-    private House house = HouseTestBuilder.builder().build().buildHouse();
+    private House residentHouse = HouseTestBuilder.builder().build().buildHouse();
 
     @Builder.Default
-    private List<House> houses = List.of(HouseTestBuilder.builder().build().buildHouse());
+    private List<House> ownerHouses = List.of(HouseTestBuilder.builder().build().buildHouse());
 
     public Person buildPerson() {
         return new Person(id, uuid, name, surname, sex, passportSeries, passportNumber, createDate, updateDate,
-                house, houses);
+                residentHouse, ownerHouses);
     }
 
     public PersonRequest buildPersonRequest() {
@@ -99,8 +99,8 @@ public class PersonTestBuilder {
                 .withPassportNumber("1234567")
                 .withCreateDate(null)
                 .withUpdateDate(null)
-                .withHouse(HouseTestBuilder.builder().build().buildHouseForCreate())
-                .withHouses(null)
+                .withResidentHouse(HouseTestBuilder.builder().build().buildHouseForCreate())
+                .withOwnerHouses(null)
                 .build().buildPerson();
     }
 
@@ -117,8 +117,8 @@ public class PersonTestBuilder {
                         2023, 12, 28, 7, 12, 15, 156))
                 .withUpdateDate(LocalDateTime.of(
                         2023, 12, 28, 7, 12, 15, 156))
-                .withHouse(house)
-                .withHouses(List.of(house))
+                .withResidentHouse(residentHouse)
+                .withOwnerHouses(List.of(residentHouse))
                 .build().buildPerson();
     }
 
@@ -135,8 +135,8 @@ public class PersonTestBuilder {
                         2023, 9, 29, 6, 5, 15, 156))
                 .withUpdateDate(LocalDateTime.of(
                         2023, 9, 29, 6, 5, 15, 156))
-                .withHouse(house)
-                .withHouses(null)
+                .withResidentHouse(residentHouse)
+                .withOwnerHouses(null)
                 .build().buildPerson();
     }
 }

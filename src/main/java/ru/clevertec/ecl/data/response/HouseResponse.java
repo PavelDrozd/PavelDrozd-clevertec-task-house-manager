@@ -14,9 +14,9 @@ public record HouseResponse(
 
         UUID uuid,
 
-        String area,
-
         String country,
+
+        String area,
 
         String city,
 

@@ -17,5 +17,7 @@ public interface AbstractService<K, V, R> {
 
     R update(V v);
 
+    R updatePart(V v);
+
     void deleteById(K id);
 }

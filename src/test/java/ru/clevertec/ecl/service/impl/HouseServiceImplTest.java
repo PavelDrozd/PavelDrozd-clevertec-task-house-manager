@@ -74,7 +74,7 @@ class HouseServiceImplTest {
     }
 
     @Test
-    void getAllShouldReturnExpectedList() {
+    void getAllShouldReturnExpectedHouseResponseList() {
         // given
         List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
         HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
@@ -152,12 +152,20 @@ class HouseServiceImplTest {
     @Test
     void updateShouldCaptorExpectedHouse() {
         // given
-        HouseRequest houseRequest = HouseTestBuilder.builder().build().buildHouseRequest();
+        HouseRequest houseRequest = HouseTestBuilder.builder()
+                .withNumber("25")
+                .build().buildHouseRequest();
         House house = HouseTestBuilder.builder().build().buildHouse();
-        House expected = HouseTestBuilder.builder().build().buildHouse();
+        House mergedHouse = HouseTestBuilder.builder()
+                .withNumber("25")
+                .build().buildHouse();
+        House expected = HouseTestBuilder.builder()
+                .withNumber("25")
+                .build().buildHouse();
 
-        when(houseMapper.toHouse(houseRequest)).thenReturn(house);
         when(houseRepository.findByUuid(house.getUuid())).thenReturn(Optional.of(house));
+        when(houseMapper.mergeWithNulls(house, houseRequest)).thenReturn(mergedHouse);
+        when(houseRepository.save(mergedHouse)).thenReturn(mergedHouse);
 
         // when
         houseService.update(houseRequest);
@@ -178,6 +186,51 @@ class HouseServiceImplTest {
     }
 
     @Test
+    void updatePartShouldReturnExpectedHouseResponse() {
+        // given
+        HouseRequest houseRequest = HouseTestBuilder.builder()
+                .withCountry(null)
+                .withArea(null)
+                .withCity(null)
+                .withStreet("Пролетарская")
+                .withNumber("1")
+                .build().buildHouseRequest();
+        House house = HouseTestBuilder.builder().build().buildHouse();
+        House mergedHouse = HouseTestBuilder.builder()
+                .withStreet("Пролетарская")
+                .withNumber("1")
+                .build().buildHouse();
+        HouseResponse houseResponse = HouseTestBuilder.builder()
+                .withStreet("Пролетарская")
+                .withNumber("1")
+                .build().buildHouseResponse();
+        HouseResponse expected = HouseTestBuilder.builder()
+                .withStreet("Пролетарская")
+                .withNumber("1")
+                .build().buildHouseResponse();
+
+
+        when(houseRepository.findByUuid(house.getUuid())).thenReturn(Optional.of(house));
+        when(houseMapper.merge(house, houseRequest)).thenReturn(mergedHouse);
+        when(houseRepository.save(mergedHouse)).thenReturn(mergedHouse);
+        when(houseMapper.toHouseResponse(mergedHouse)).thenReturn(houseResponse);
+
+        // when
+        HouseResponse actual = houseService.updatePart(houseRequest);
+
+        // then
+
+        assertThat(actual)
+                .hasFieldOrPropertyWithValue(House.Fields.uuid, expected.uuid())
+                .hasFieldOrPropertyWithValue(House.Fields.country, expected.country())
+                .hasFieldOrPropertyWithValue(House.Fields.area, expected.area())
+                .hasFieldOrPropertyWithValue(House.Fields.city, expected.city())
+                .hasFieldOrPropertyWithValue(House.Fields.street, expected.street())
+                .hasFieldOrPropertyWithValue(House.Fields.number, expected.number())
+                .hasFieldOrPropertyWithValue(House.Fields.createDate, expected.createDate());
+    }
+
+    @Test
     void deleteByIdShouldThrowNotFoundException() {
         // given
         UUID uuid = UUID.fromString("0116a46b-d57b-4bbc-a697-d4a7ace791f5");
@@ -190,7 +243,7 @@ class HouseServiceImplTest {
     }
 
     @Test
-    void getPersonsByHouseUuid() {
+    void getPersonsByHouseUuidShouldReturnExpectedPersonResponseList() {
         // given
         UUID uuid = HouseTestBuilder.builder().build().buildHouse().getUuid();
         List<Person> persons = PersonTestBuilder.builder().build().buildPersonList();

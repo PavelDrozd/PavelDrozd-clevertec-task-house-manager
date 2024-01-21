@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,8 +32,10 @@ public class PersonController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponse> get(@PathVariable UUID id) {
+        PersonResponse personResponse = personService.getById(id);
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(personService.getById(id));
+                .body(personResponse);
     }
 
     @GetMapping
@@ -45,28 +48,42 @@ public class PersonController {
 
     @GetMapping("/{id}/houses")
     public ResponseEntity<List<HouseResponse>> getByPerson(@PathVariable UUID id) {
+        List<HouseResponse> housesResponse = personService.getHousesByPersonUuid(id);
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(personService.getHousesByPersonUuid(id));
+                .body(housesResponse);
     }
 
     @GetMapping("/search/")
-    public ResponseEntity<List<PersonResponse>> getByNameMatches(@PathVariable String name){
+    public ResponseEntity<List<PersonResponse>> getByNameMatches(@PathVariable String name) {
+        List<PersonResponse> personsResponse = personService.getByNameMatches(name);
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(personService.getByNameMatches(name));
+                .body(personsResponse);
     }
 
     @PostMapping
     public ResponseEntity<PersonResponse> create(@RequestBody PersonRequest personRequest, Model model) {
-        PersonResponse person = personService.create(personRequest);
+        PersonResponse personResponse = personService.create(personRequest);
 
-        return buildResponsePerson(person, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(personResponse);
     }
 
     @PutMapping
     public ResponseEntity<PersonResponse> update(@RequestBody PersonRequest personRequest, Model model) {
-        PersonResponse person = personService.update(personRequest);
+        PersonResponse personResponse = personService.update(personRequest);
 
-        return buildResponsePerson(person, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(personResponse);
+    }
+
+    @PatchMapping
+    public ResponseEntity<PersonResponse> updatePart(@RequestBody PersonRequest personRequest, Model model) {
+        PersonResponse personResponse = personService.updatePart(personRequest);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(personResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -75,10 +92,4 @@ public class PersonController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-    private ResponseEntity<PersonResponse> buildResponsePerson(PersonResponse personResponse, HttpStatus httpStatus) {
-        return ResponseEntity.status(httpStatus)
-                .body(personResponse);
-    }
-
 }

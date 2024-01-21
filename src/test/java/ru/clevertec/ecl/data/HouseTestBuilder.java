@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageImpl;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.entity.House;
-import ru.clevertec.ecl.entity.Person;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,19 +39,16 @@ public class HouseTestBuilder {
     private LocalDateTime createDate = LocalDateTime.of(
             2024, 1, 3, 9, 12, 15, 156);
 
-    @Builder.Default
-    private List<Person> residents = null;
-
     public House buildHouse() {
-        return new House(id, uuid, area, country, city, street, number, createDate, null);
+        return new House(id, uuid, country, area, city, street, number, createDate, null);
     }
 
     public HouseRequest buildHouseRequest() {
-        return new HouseRequest(uuid, area, country, city, street, number, null);
+        return new HouseRequest(uuid, country, area, city, street, number);
     }
 
     public HouseResponse buildHouseResponse() {
-        return new HouseResponse(uuid, area, country, city, street, number, createDate, null);
+        return new HouseResponse(uuid, country, area, city, street, number, createDate, null);
     }
 
     public List<House> buildHouseList() {

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,8 +31,10 @@ public class HouseController {
 
     @GetMapping("/{id}")
     public ResponseEntity<HouseResponse> get(@PathVariable UUID id) {
+        HouseResponse houseResponse = houseService.getById(id);
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(houseService.getById(id));
+                .body(houseResponse);
     }
 
     @GetMapping
@@ -44,28 +47,42 @@ public class HouseController {
 
     @GetMapping("/{id}/persons")
     public ResponseEntity<List<PersonResponse>> getByHouse(@PathVariable UUID id) {
+        List<PersonResponse> personsResponse = houseService.getPersonsByHouseUuid(id);
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(houseService.getPersonsByHouseUuid(id));
+                .body(personsResponse);
     }
 
     @GetMapping("/search/{name}")
     public ResponseEntity<List<HouseResponse>> getByNameMatches(@PathVariable String name) {
+        List<HouseResponse> housesResponse = houseService.getByNameMatches(name);
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(houseService.getByNameMatches(name));
+                .body(housesResponse);
     }
 
     @PostMapping
     public ResponseEntity<HouseResponse> create(@RequestBody HouseRequest houseRequest) {
-        HouseResponse house = houseService.create(houseRequest);
+        HouseResponse houseResponse = houseService.create(houseRequest);
 
-        return buildResponseHouse(house, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(houseResponse);
     }
 
     @PutMapping
     public ResponseEntity<HouseResponse> update(@RequestBody HouseRequest houseRequest) {
-        HouseResponse house = houseService.update(houseRequest);
+        HouseResponse houseResponse = houseService.update(houseRequest);
 
-        return buildResponseHouse(house, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(houseResponse);
+    }
+
+    @PatchMapping
+    public ResponseEntity<HouseResponse> updatePart(@RequestBody HouseRequest houseRequest) {
+        HouseResponse houseResponse = houseService.updatePart(houseRequest);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(houseResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -73,10 +90,5 @@ public class HouseController {
         houseService.deleteById(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    private ResponseEntity<HouseResponse> buildResponseHouse(HouseResponse houseResponse, HttpStatus httpStatus) {
-        return ResponseEntity.status(httpStatus)
-                .body(houseResponse);
     }
 }

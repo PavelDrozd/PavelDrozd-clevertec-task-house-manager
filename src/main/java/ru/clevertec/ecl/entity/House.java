@@ -42,11 +42,11 @@ public class House {
     @Column(name = "uuid", unique = true, nullable = false)
     private UUID uuid;
 
-    @Column(name = "area", nullable = false)
-    private String area;
-
     @Column(name = "country", nullable = false)
     private String country;
+
+    @Column(name = "area", nullable = false)
+    private String area;
 
     @Column(name = "city", nullable = false)
     private String city;

@@ -19,8 +19,8 @@ import ru.clevertec.ecl.repository.HouseRepository;
 import ru.clevertec.ecl.repository.PersonRepository;
 import ru.clevertec.ecl.service.PersonService;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -46,7 +46,7 @@ public class PersonServiceImpl implements PersonService {
     private final HouseMapper houseMapper;
 
     /**
-     * Process PersonRequest object for create new Person entity and send it to repository,
+     * Process PersonRequest object for create new Person entity and send it to a repository,
      * then create PersonResponse object.
      *
      * @param personRequest expected object of type PersonRequest.
@@ -56,7 +56,8 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     public PersonResponse create(PersonRequest personRequest) {
         log.debug("SERVICE: CREATE PERSON: " + personRequest);
-        UUID houseId = personRequest.residentHousesRequest().uuid();
+
+        UUID houseId = personRequest.residentHouseRequest().uuid();
         House house = houseRepository.findByUuid(houseId)
                 .orElseThrow(() -> NotFoundException.of(House.class, houseId));
 
@@ -68,27 +69,29 @@ public class PersonServiceImpl implements PersonService {
     }
 
     /**
-     * Get all Person entities from repository and return as PersonResponse.
+     * Get all Person entities from the repository and return as PersonResponse.
      *
      * @return List of PersonResponse objects.
      */
     @Override
     public List<PersonResponse> getAll() {
         log.debug("SERVICE: GET ALL PERSONS.");
+
         return personRepository.findAll().stream()
                 .map(personMapper::toPersonResponse)
                 .toList();
     }
 
     /**
-     * Get all Person entities from repository paginated with limit and offset, then return as PersonResponse.
+     * Get all Person entities from the repository paginated with limit and offset, then return as PersonResponse.
      *
-     * @param pageable expected object type of Pageable.
+     * @param pageable expected an object type of Pageable.
      * @return List of PersonResponse objects.
      */
     @Override
     public Page<PersonResponse> getAll(Pageable pageable) {
         log.debug("SERVICE: FIND ALL PERSONS WITH PAGEABLE: " + pageable);
+
         return personRepository.findAll(pageable)
                 .map(personMapper::toPersonResponse);
     }
@@ -102,6 +105,7 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public PersonResponse getById(UUID id) {
         log.debug("SERVICE: GET PERSON BY UUID: " + id);
+
         return personRepository.findByUuid(id)
                 .map(personMapper::toPersonResponse)
                 .orElseThrow(() -> NotFoundException.of(Person.class, id));
@@ -110,13 +114,14 @@ public class PersonServiceImpl implements PersonService {
     /**
      * Update Person in repository by accept PersonRequest object with updated data and return as PersonResponse.
      *
-     * @param personRequest expected object type of PersonRequest with filled fields.
+     * @param personRequest expected an object type of PersonRequest with filled fields.
      * @return updated object PersonResponse.
      */
     @Override
     @Transactional
     public PersonResponse update(PersonRequest personRequest) {
         log.debug("SERVICE: UPDATE PERSON: " + personRequest);
+
         UUID id = personRequest.uuid();
         Person exist = personRepository.findByUuid(id)
                 .orElseThrow(() -> NotFoundException.of(Person.class, id));
@@ -124,11 +129,36 @@ public class PersonServiceImpl implements PersonService {
         if (isChanged(exist, personRequest)) {
             return personMapper.toPersonResponse(exist);
         }
-        Person person = mergePerson(exist, personRequest);
-        Person updated = personRepository.save(person);
-        return personMapper.toPersonResponse(
-                personRepository.findByUuid(updated.getUuid())
-                        .orElseThrow(() -> NotFoundException.of(Person.class, id)));
+
+        Person person = mergeToUpdatePerson(exist, personRequest);
+        Person updatedPerson = personRepository.save(person);
+
+        return personMapper.toPersonResponse(updatedPerson);
+    }
+
+    /**
+     * Update Person in repository by accepted PersonRequest object with updated part of data and
+     * return as PersonResponse.
+     *
+     * @param personRequest expected an object type of PersonRequest with not fulfilled fields.
+     * @return updated object PersonResponse.
+     */
+    @Override
+    public PersonResponse updatePart(PersonRequest personRequest) {
+        log.debug("SERVICE: UPDATE PERSON: " + personRequest);
+
+        UUID id = personRequest.uuid();
+        Person exist = personRepository.findByUuid(id)
+                .orElseThrow(() -> NotFoundException.of(Person.class, id));
+
+        if (isChanged(exist, personRequest)) {
+            return personMapper.toPersonResponse(exist);
+        }
+
+        Person person = personMapper.merge(exist, personRequest);
+        Person updatedPerson = personRepository.save(person);
+
+        return personMapper.toPersonResponse(updatedPerson);
     }
 
     /**
@@ -139,11 +169,12 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public void deleteById(UUID id) {
         log.debug("SERVICE: DELETE PERSON BY UUID: " + id);
+
         personRepository.deleteByUuid(id);
     }
 
     /**
-     * Get residents of house from repository by House UUID.
+     * Get residents of a house from repository by House UUID.
      *
      * @param id expected object type of UUID.
      * @return List of PersonResponse objects.
@@ -151,11 +182,18 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public List<HouseResponse> getHousesByPersonUuid(UUID id) {
         log.debug("SERVICE: GET PERSONS BY HOUSE UUID: " + id);
+
         return personRepository.findHousesByPersonUuid(id).stream()
                 .map(houseMapper::toHouseResponse)
                 .toList();
     }
 
+    /**
+     * Get persons from repository by any matches name.
+     *
+     * @param name expected string name.
+     * @return List of PersonResponse objects.
+     */
     @Override
     public List<PersonResponse> getByNameMatches(String name) {
         return personRepository.findByNameMatches(name).stream()
@@ -164,53 +202,62 @@ public class PersonServiceImpl implements PersonService {
     }
 
     private boolean isChanged(Person exist, PersonRequest personRequest) {
-        return exist.getName().equals(personRequest.name())
-               && exist.getSurname().equals(personRequest.surname())
-               && exist.getPassportSeries().equals(personRequest.passportSeries())
-               && exist.getPassportNumber().equals(personRequest.passportNumber())
-               && exist.getSex().equals(personRequest.sex())
-               && personRequest.residentHousesRequest() != null
-               && exist.getResidentHouse().getUuid().equals(personRequest.residentHousesRequest().uuid());
+        return personRequest.name() != null
+               && !exist.getName().equals(personRequest.name())
+
+               && personRequest.surname() != null
+               && !exist.getSurname().equals(personRequest.surname())
+
+               && personRequest.sex() != null
+               && !exist.getSex().equals(personRequest.sex())
+
+               && personRequest.passportSeries() != null
+               && !exist.getPassportSeries().equals(personRequest.passportSeries())
+
+               && personRequest.passportNumber() != null
+               && !exist.getPassportNumber().equals(personRequest.passportNumber())
+
+               && personRequest.residentHouseRequest() != null
+               && !exist.getResidentHouse().getUuid().equals(personRequest.residentHouseRequest().uuid())
+
+               && personRequest.ownerHousesRequest() != null
+               && isOwnerHousesUuidChanged(exist, personRequest);
     }
 
-    private Person mergePerson(Person exist, PersonRequest personRequest) {
-        Person person = personMapper.toPerson(personRequest);
-        person.setId(exist.getId());
-        person.setCreateDate(exist.getCreateDate());
+    private boolean isOwnerHousesUuidChanged(Person exist, PersonRequest personRequest) {
+        List<HouseRequest> houseRequests = personRequest.ownerHousesRequest();
+        List<House> ownerHouses = exist.getOwnerHouses();
 
-        setHouseToPerson(exist, personRequest, person);
-        setHousesToPerson(exist, personRequest, person);
+        long ownerHousesSize = ownerHouses.size();
+        long ownerHousesRequestSize = houseRequests.stream()
+                .filter(houseRequest -> ownerHouses.stream()
+                        .allMatch(house -> house.getUuid().equals(houseRequest.uuid()))
+                ).count();
 
+        return ownerHousesRequestSize != ownerHousesSize;
+    }
+
+    private Person mergeToUpdatePerson(Person exist, PersonRequest personRequest) {
+        Person person = personMapper.mergeWithNulls(exist, personRequest);
+        setResidentHouseToPerson(person);
+        if (person.getOwnerHouses() != null) {
+            setOwnerHousesToPerson(person);
+        }
         return person;
     }
 
-    private void setHouseToPerson(Person exist, PersonRequest personRequest, Person person) {
-        HouseRequest houseRequest = personRequest.residentHousesRequest();
-
-        if (houseRequest == null) {
-            person.setResidentHouse(exist.getResidentHouse());
-
-        } else {
-            House house = houseRepository.findByUuid(houseRequest.uuid())
-                    .orElseThrow(() -> NotFoundException.of(House.class, houseRequest.uuid()));
-            person.setResidentHouse(house);
-        }
+    private void setOwnerHousesToPerson(Person person) {
+        List<House> ownerHousesWithUuid = person.getOwnerHouses();
+        List<House> ownerHouses = ownerHousesWithUuid.stream()
+                .map(house -> houseRepository.findByUuid(house.getUuid()))
+                .map(Optional::orElseThrow)
+                .toList();
+        person.setOwnerHouses(ownerHouses);
     }
 
-    private void setHousesToPerson(Person exist, PersonRequest personRequest, Person person) {
-        List<HouseRequest> houseRequests = personRequest.ownerHousesRequest();
-
-        List<House> houses = new ArrayList<>();
-        if (houseRequests == null) {
-            person.setOwnerHouses(exist.getOwnerHouses());
-
-        } else {
-            for (HouseRequest houseReq : houseRequests) {
-                houses.add(houseRepository.findByUuid(houseReq.uuid())
-                        .orElseThrow(() -> NotFoundException.of(House.class, houseReq.uuid())));
-            }
-        }
-
-        person.setOwnerHouses(houses);
+    private void setResidentHouseToPerson(Person person) {
+        UUID residentHouseUuid = person.getResidentHouse().getUuid();
+        person.setResidentHouse(houseRepository.findByUuid(residentHouseUuid)
+                .orElseThrow(() -> NotFoundException.of(House.class, residentHouseUuid)));
     }
 }

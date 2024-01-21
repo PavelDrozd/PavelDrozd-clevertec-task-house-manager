@@ -4,7 +4,6 @@ package ru.clevertec.ecl.data.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.List;
 import java.util.UUID;
 
 public record HouseRequest(
@@ -29,8 +28,6 @@ public record HouseRequest(
 
         @NotBlank(message = "Number is blank.")
         @Size(max = 10, message = "Number is too long.")
-        String number,
-
-        List<PersonRequest> residentsRequest
+        String number
 ) {
 }
