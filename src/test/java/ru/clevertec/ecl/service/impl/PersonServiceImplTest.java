@@ -63,7 +63,7 @@ class PersonServiceImplTest {
         PersonResponse expected = PersonTestBuilder.builder().build().buildPersonResponse();
 
         when(personMapper.toPerson(personRequest)).thenReturn(person);
-        when(houseRepository.findByUuid(any())).thenReturn(Optional.ofNullable(person.getResidentHouse()));
+        when(houseRepository.findByUuid(any())).thenReturn(Optional.ofNullable(person.getTenantHouse()));
         when(personRepository.save(person)).thenReturn(person);
         when(personMapper.toPersonResponse(person)).thenReturn(personResponse);
 
@@ -239,7 +239,7 @@ class PersonServiceImplTest {
                 .hasFieldOrPropertyWithValue(PersonResponse.Fields.passportSeries, expected.passportSeries())
                 .hasFieldOrPropertyWithValue(PersonResponse.Fields.passportNumber, expected.passportNumber())
                 .hasFieldOrPropertyWithValue(PersonResponse.Fields.createDate, expected.createDate())
-                .hasFieldOrPropertyWithValue(PersonResponse.Fields.residentHouseResponse, expected.residentHouseResponse())
+                .hasFieldOrPropertyWithValue(PersonResponse.Fields.tenantHouseResponse, expected.tenantHouseResponse())
                 .hasFieldOrPropertyWithValue(PersonResponse.Fields.ownerHousesResponse, expected.ownerHousesResponse());
     }
 

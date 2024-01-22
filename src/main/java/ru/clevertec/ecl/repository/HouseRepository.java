@@ -15,7 +15,7 @@ public interface HouseRepository extends JpaRepository<House, Long> {
 
     void deleteByUuid(UUID uuid);
 
-    @Query(value = "SELECT h.residents " +
+    @Query(value = "SELECT h.tenants " +
                    "FROM House h " +
                    "WHERE h.uuid = :uuid")
     List<Person> findPersonsByHouseUuid(UUID uuid);

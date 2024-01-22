@@ -32,7 +32,7 @@ public record PersonResponse(
         LocalDateTime updateDate,
 
         @JsonIgnore
-        HouseResponse residentHouseResponse,
+        HouseResponse tenantHouseResponse,
 
         @JsonIgnore
         List<HouseResponse> ownerHousesResponse

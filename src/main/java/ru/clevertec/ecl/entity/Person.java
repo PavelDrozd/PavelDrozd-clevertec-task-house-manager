@@ -76,7 +76,7 @@ public class Person {
     @EqualsAndHashCode.Exclude
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "house_id", nullable = false)
-    private House residentHouse;
+    private House tenantHouse;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

@@ -19,7 +19,7 @@ public interface HouseMapper {
     @Mapping(target = "createDate", ignore = true)
     House toHouse(HouseRequest houseRequest);
 
-    @Mapping(target = "residentsResponse", ignore = true)
+    @Mapping(target = "tenantResponse", ignore = true)
     HouseResponse toHouseResponse(House house);
 
     House merge(@MappingTarget House house, HouseRequest houseRequest);

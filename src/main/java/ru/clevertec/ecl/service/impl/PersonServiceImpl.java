@@ -57,12 +57,12 @@ public class PersonServiceImpl implements PersonService {
     public PersonResponse create(PersonRequest personRequest) {
         log.debug("SERVICE: CREATE PERSON: " + personRequest);
 
-        UUID houseId = personRequest.residentHouseRequest().uuid();
+        UUID houseId = personRequest.tenantHouseRequest().uuid();
         House house = houseRepository.findByUuid(houseId)
                 .orElseThrow(() -> NotFoundException.of(House.class, houseId));
 
         Person person = personMapper.toPerson(personRequest);
-        person.setResidentHouse(house);
+        person.setTenantHouse(house);
 
         Person created = personRepository.save(person);
         return personMapper.toPersonResponse(created);
@@ -217,8 +217,8 @@ public class PersonServiceImpl implements PersonService {
                && personRequest.passportNumber() != null
                && !exist.getPassportNumber().equals(personRequest.passportNumber())
 
-               && personRequest.residentHouseRequest() != null
-               && !exist.getResidentHouse().getUuid().equals(personRequest.residentHouseRequest().uuid())
+               && personRequest.tenantHouseRequest() != null
+               && !exist.getTenantHouse().getUuid().equals(personRequest.tenantHouseRequest().uuid())
 
                && personRequest.ownerHousesRequest() != null
                && isOwnerHousesUuidChanged(exist, personRequest);
@@ -256,8 +256,8 @@ public class PersonServiceImpl implements PersonService {
     }
 
     private void setResidentHouseToPerson(Person person) {
-        UUID residentHouseUuid = person.getResidentHouse().getUuid();
-        person.setResidentHouse(houseRepository.findByUuid(residentHouseUuid)
+        UUID residentHouseUuid = person.getTenantHouse().getUuid();
+        person.setTenantHouse(houseRepository.findByUuid(residentHouseUuid)
                 .orElseThrow(() -> NotFoundException.of(House.class, residentHouseUuid)));
     }
 }

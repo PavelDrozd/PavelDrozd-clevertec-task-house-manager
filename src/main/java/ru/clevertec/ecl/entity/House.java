@@ -62,6 +62,6 @@ public class House {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "residentHouse")
-    private List<Person> residents;
+    @OneToMany(mappedBy = "tenantHouse")
+    private List<Person> tenants;
 }
