@@ -47,40 +47,40 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "uuid")
+    @Column(name = "uuid", nullable = false)
     private UUID uuid;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "surname")
+    @Column(name = "surname", nullable = false)
     private String surname;
 
     @Convert(converter = PersonSexConverter.class)
-    @Column(name = "sex_id")
+    @Column(name = "sex_id", nullable = false)
     private Sex sex;
 
-    @Column(name = "passport_series")
+    @Column(name = "passport_series", nullable = false)
     private String passportSeries;
 
-    @Column(name = "passport_number")
+    @Column(name = "passport_number", nullable = false)
     private String passportNumber;
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
 
-    @Column(name = "update_date")
+    @Column(name = "update_date", nullable = false)
     private LocalDateTime updateDate;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinColumn(name = "house_id", nullable = false)
     private House tenantHouse;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},
             fetch = FetchType.LAZY)
     @JoinTable(name = "owner_house",
             joinColumns = {@JoinColumn(name = "person_id")},

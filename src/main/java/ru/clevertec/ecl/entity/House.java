@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -62,6 +63,6 @@ public class House {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "tenantHouse")
+    @OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},mappedBy = "tenantHouse")
     private List<Person> tenants;
 }

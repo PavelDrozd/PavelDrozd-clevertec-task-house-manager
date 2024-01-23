@@ -63,7 +63,7 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<PersonResponse> create(@RequestBody PersonRequest personRequest, Model model) {
+    public ResponseEntity<PersonResponse> create(@RequestBody PersonRequest personRequest) {
         PersonResponse personResponse = personService.create(personRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -71,7 +71,7 @@ public class PersonController {
     }
 
     @PutMapping
-    public ResponseEntity<PersonResponse> update(@RequestBody PersonRequest personRequest, Model model) {
+    public ResponseEntity<PersonResponse> update(@RequestBody PersonRequest personRequest) {
         PersonResponse personResponse = personService.update(personRequest);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -79,7 +79,7 @@ public class PersonController {
     }
 
     @PatchMapping
-    public ResponseEntity<PersonResponse> updatePart(@RequestBody PersonRequest personRequest, Model model) {
+    public ResponseEntity<PersonResponse> updatePart(@RequestBody PersonRequest personRequest) {
         PersonResponse personResponse = personService.updatePart(personRequest);
 
         return ResponseEntity.status(HttpStatus.OK)

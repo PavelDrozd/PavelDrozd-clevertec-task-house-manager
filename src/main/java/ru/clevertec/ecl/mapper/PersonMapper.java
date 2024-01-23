@@ -18,14 +18,15 @@ public interface PersonMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createDate", ignore = true)
     @Mapping(target = "updateDate", ignore = true)
-    @Mapping(target = "tenantHouse", source = "tenantHouseRequest")
-    @Mapping(target = "ownerHouses", source = "ownerHousesRequest")
+    @Mapping(target = "tenantHouse", ignore = true)
+    @Mapping(target = "ownerHouses", ignore = true)
     Person toPerson(PersonRequest personRequest);
 
     PersonResponse toPersonResponse(Person person);
 
-    @Mapping(target = "tenantHouse", source = "tenantHouseRequest")
-    @Mapping(target = "ownerHouses", source = "ownerHousesRequest")
+    @Mapping(target = "uuid", ignore = true)
+    @Mapping(target = "tenantHouse", ignore = true)
+    @Mapping(target = "ownerHouses", ignore = true)
     Person merge(@MappingTarget Person person, PersonRequest personRequest);
 
     @Mapping(target = "name",
@@ -38,9 +39,8 @@ public interface PersonMapper {
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
     @Mapping(target = "passportNumber",
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    @Mapping(target = "tenantHouse", source = "tenantHouseRequest",
-            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    @Mapping(target = "ownerHouses", source = "ownerHousesRequest",
-            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    @Mapping(target = "uuid", ignore = true)
+    @Mapping(target = "tenantHouse", ignore = true)
+    @Mapping(target = "ownerHouses", ignore = true)
     Person mergeWithNulls(@MappingTarget Person person, PersonRequest personRequest);
 }

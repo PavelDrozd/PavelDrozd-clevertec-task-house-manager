@@ -30,8 +30,8 @@ public record PersonRequest(
         @Size(max = 8, message = "Passport number is too long.")
         String passportNumber,
 
-        HouseRequest tenantHouseRequest,
+        UUID tenantHouseUuidRequest,
 
-        List<HouseRequest> ownerHousesRequest
+        List<UUID> ownerHousesUuidRequest
 ) {
 }
