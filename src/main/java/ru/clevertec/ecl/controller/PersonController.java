@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.data.request.PersonRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
+import ru.clevertec.ecl.service.HouseHistoryService;
 import ru.clevertec.ecl.service.PersonService;
 
 import java.util.List;
@@ -29,6 +29,8 @@ import java.util.UUID;
 public class PersonController {
 
     private final PersonService personService;
+
+    private final HouseHistoryService houseHistoryService;
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponse> get(@PathVariable UUID id) {
@@ -60,6 +62,22 @@ public class PersonController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personsResponse);
+    }
+
+    @GetMapping("/{id}/tenants")
+    public ResponseEntity<List<HouseResponse>> getHousesByTenant(@PathVariable UUID id) {
+        List<HouseResponse> personResponses = houseHistoryService.getHousesByTenantUuid(id);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(personResponses);
+    }
+
+    @GetMapping("/{id}/owners")
+    public ResponseEntity<List<HouseResponse>> getHousesByOwner(@PathVariable UUID id) {
+        List<HouseResponse> personResponses = houseHistoryService.getHousesByOwnerUuid(id);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(personResponses);
     }
 
     @PostMapping

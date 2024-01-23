@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
+import ru.clevertec.ecl.service.HouseHistoryService;
 import ru.clevertec.ecl.service.HouseService;
 
 import java.util.List;
@@ -28,6 +29,8 @@ import java.util.UUID;
 public class HouseController {
 
     private final HouseService houseService;
+
+    private final HouseHistoryService houseHistoryService;
 
     @GetMapping("/{id}")
     public ResponseEntity<HouseResponse> get(@PathVariable UUID id) {
@@ -59,6 +62,22 @@ public class HouseController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(housesResponse);
+    }
+
+    @GetMapping("/{id}/tenants")
+    public ResponseEntity<List<PersonResponse>> getTenantsByHouse(@PathVariable UUID id) {
+        List<PersonResponse> personResponses = houseHistoryService.getTenantsByHouseUuid(id);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(personResponses);
+    }
+
+    @GetMapping("/{id}/owners")
+    public ResponseEntity<List<PersonResponse>> getOwnersByHouse(@PathVariable UUID id) {
+        List<PersonResponse> personResponses = houseHistoryService.getOwnersByHouseUuid(id);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(personResponses);
     }
 
     @PostMapping
