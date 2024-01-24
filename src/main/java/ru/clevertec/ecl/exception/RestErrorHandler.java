@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.clevertec.ecl.data.error.ErrorDto;
 
 @Slf4j
-@RestControllerAdvice("ru.clevertec.ecl.web.rest")
+@RestControllerAdvice("ru.clevertec.ecl.controller")
 public class RestErrorHandler {
 
     @ExceptionHandler(Exception.class)

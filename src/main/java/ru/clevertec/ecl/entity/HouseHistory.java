@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
-import ru.clevertec.ecl.entity.converter.HouseHistoryTypeConverter;
+import ru.clevertec.ecl.entity.converter.TypeConverter;
 import ru.clevertec.ecl.enums.Type;
 
 import java.time.LocalDateTime;
@@ -54,7 +54,7 @@ public class HouseHistory {
     @Column(name = "date")
     private LocalDateTime date;
 
-    @Convert(converter = HouseHistoryTypeConverter.class)
+    @Convert(converter = TypeConverter.class)
     @Column(name = "type_id")
     private Type type;
 }

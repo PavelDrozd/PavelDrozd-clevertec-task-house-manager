@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.data.HouseTestBuilder;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.data.response.HouseResponse;
@@ -14,9 +16,9 @@ import ru.clevertec.ecl.entity.Person;
 import ru.clevertec.ecl.enums.Type;
 import ru.clevertec.ecl.mapper.HouseMapper;
 import ru.clevertec.ecl.mapper.PersonMapper;
-import ru.clevertec.ecl.repository.HouseHistoryRepository;
+import ru.clevertec.ecl.repository.HouseRepository;
+import ru.clevertec.ecl.repository.PersonRepository;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +29,10 @@ import static org.mockito.Mockito.when;
 class HouseHistoryServiceImplTest {
 
     @Mock
-    private HouseHistoryRepository houseHistoryRepository;
+    private HouseRepository houseRepository;
+
+    @Mock
+    private PersonRepository personRepository;
 
     @Mock
     private HouseMapper houseMapper;
@@ -43,16 +48,17 @@ class HouseHistoryServiceImplTest {
         // given
         UUID uuid = HouseTestBuilder.builder().build().buildHouse().getUuid();
         Type type = Type.TENANT;
+        Pageable pageable = Pageable.unpaged();
 
-        List<Person> persons = PersonTestBuilder.builder().build().buildPersonList();
+        Page<Person> persons = PersonTestBuilder.builder().build().buildPersonPage();
         PersonResponse personResponse = PersonTestBuilder.builder().build().buildPersonResponse();
-        List<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponseList();
+        Page<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponsePage();
 
-        when(houseHistoryRepository.findPersonsByHouseUuidAndType(uuid, type)).thenReturn(persons);
+        when(personRepository.findPersonsByHouseUuidAndType(uuid, type, pageable)).thenReturn(persons);
         when(personMapper.toPersonResponse(any())).thenReturn(personResponse);
 
         // when
-        List<PersonResponse> actual = houseHistoryService.getTenantsByHouseUuid(uuid);
+        Page<PersonResponse> actual = houseHistoryService.getTenantsByHouseUuid(uuid, pageable);
 
         // then
         assertThat(actual)
@@ -64,16 +70,17 @@ class HouseHistoryServiceImplTest {
         // given
         UUID uuid = HouseTestBuilder.builder().build().buildHouse().getUuid();
         Type type = Type.OWNER;
+        Pageable pageable = Pageable.unpaged();
 
-        List<Person> persons = PersonTestBuilder.builder().build().buildPersonList();
+        Page<Person> persons = PersonTestBuilder.builder().build().buildPersonPage();
         PersonResponse personResponse = PersonTestBuilder.builder().build().buildPersonResponse();
-        List<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponseList();
+        Page<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponsePage();
 
-        when(houseHistoryRepository.findPersonsByHouseUuidAndType(uuid, type)).thenReturn(persons);
+        when(personRepository.findPersonsByHouseUuidAndType(uuid, type, pageable)).thenReturn(persons);
         when(personMapper.toPersonResponse(any())).thenReturn(personResponse);
 
         // when
-        List<PersonResponse> actual = houseHistoryService.getOwnersByHouseUuid(uuid);
+        Page<PersonResponse> actual = houseHistoryService.getOwnersByHouseUuid(uuid, pageable);
 
         // then
         assertThat(actual)
@@ -85,16 +92,17 @@ class HouseHistoryServiceImplTest {
         // given
         UUID uuid = PersonTestBuilder.builder().build().buildPerson().getUuid();
         Type type = Type.TENANT;
+        Pageable pageable = Pageable.unpaged();
 
-        List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
+        Page<House> houses = HouseTestBuilder.builder().build().buildHousePage();
         HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
+        Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
 
-        when(houseHistoryRepository.findHousesByPersonUuidAndType(uuid, type)).thenReturn(houses);
+        when(houseRepository.findHousesByPersonUuidAndType(uuid, type, pageable)).thenReturn(houses);
         when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
 
         // when
-        List<HouseResponse> actual = houseHistoryService.getHousesByTenantUuid(uuid);
+        Page<HouseResponse> actual = houseHistoryService.getHousesByTenantUuid(uuid, pageable);
 
         // then
         assertThat(actual)
@@ -106,16 +114,17 @@ class HouseHistoryServiceImplTest {
         // given
         UUID uuid = PersonTestBuilder.builder().build().buildPerson().getUuid();
         Type type = Type.OWNER;
+        Pageable pageable = Pageable.unpaged();
 
-        List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
+        Page<House> houses = HouseTestBuilder.builder().build().buildHousePage();
         HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
+        Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
 
-        when(houseHistoryRepository.findHousesByPersonUuidAndType(uuid, type)).thenReturn(houses);
+        when(houseRepository.findHousesByPersonUuidAndType(uuid, type, pageable)).thenReturn(houses);
         when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
 
         // when
-        List<HouseResponse> actual = houseHistoryService.getHousesByOwnerUuid(uuid);
+        Page<HouseResponse> actual = houseHistoryService.getHousesByOwnerUuid(uuid, pageable);
 
         // then
         assertThat(actual)

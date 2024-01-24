@@ -8,7 +8,7 @@ import ru.clevertec.ecl.exception.ValidationException;
 
 @Component
 @Converter
-public class HouseHistoryTypeConverter implements AttributeConverter<Type, Integer> {
+public class TypeConverter implements AttributeConverter<Type, Integer> {
 
     @Override
     public Integer convertToDatabaseColumn(Type type) {

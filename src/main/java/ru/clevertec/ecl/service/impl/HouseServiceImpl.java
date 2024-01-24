@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
-import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.HouseMapper;
@@ -16,7 +15,6 @@ import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 import ru.clevertec.ecl.service.HouseService;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -53,20 +51,6 @@ public class HouseServiceImpl implements HouseService {
         House saved = houseRepository.save(house);
 
         return houseMapper.toHouseResponse(saved);
-    }
-
-    /**
-     * Get all House entities from the repository and return as HouseResponse.
-     *
-     * @return List of HouseResponse objects.
-     */
-    @Override
-    public List<HouseResponse> getAll() {
-        log.debug("SERVICE: GET ALL HOUSES.");
-
-        return houseRepository.findAll().stream()
-                .map(houseMapper::toHouseResponse)
-                .toList();
     }
 
     /**
@@ -163,29 +147,31 @@ public class HouseServiceImpl implements HouseService {
     /**
      * Get houses from repository by Person UUID.
      *
-     * @param id expected object type of UUID.
+     * @param id       expected object type of UUID.
+     * @param pageable expected an object type of Pageable.
      * @return List of HouseResponse objects.
      */
     @Override
-    public List<PersonResponse> getPersonsByHouseUuid(UUID id) {
-        log.debug("SERVICE: FIND HOUSES BY PERSON UUID: " + id);
+    public Page<HouseResponse> getHousesByPersonUuid(UUID id, Pageable pageable) {
+        log.debug("SERVICE: FIND HOUSES BY PERSON UUID: " + id + " WITH PAGEABLE: " + pageable);
 
-        return houseRepository.findPersonsByHouseUuid(id).stream()
-                .map(personMapper::toPersonResponse)
-                .toList();
+        return houseRepository.findByTenants_Uuid(id, pageable)
+                .map(houseMapper::toHouseResponse);
     }
 
     /**
      * Get houses from repository by any matches name.
      *
-     * @param name expected string name.
+     * @param name     expected string name.
+     * @param pageable expected an object type of Pageable.
      * @return List of HouseResponse objects.
      */
     @Override
-    public List<HouseResponse> getByNameMatches(String name) {
-        return houseRepository.findByNameMatches(name).stream()
-                .map(houseMapper::toHouseResponse)
-                .toList();
+    public Page<HouseResponse> getByNameMatches(String name, Pageable pageable) {
+        log.debug("SERVICE: GET HOUSES BY NAME MATCHES: " + name + " WITH PAGEABLE: " + pageable);
+
+        return houseRepository.findByNameMatches(name, pageable)
+                .map(houseMapper::toHouseResponse);
     }
 
     private boolean isChanged(House exist, HouseRequest houseRequest) {

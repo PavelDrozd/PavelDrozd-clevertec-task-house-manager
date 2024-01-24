@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +19,9 @@ import ru.clevertec.ecl.data.request.PersonRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.service.HouseHistoryService;
+import ru.clevertec.ecl.service.HouseService;
 import ru.clevertec.ecl.service.PersonService;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,6 +30,8 @@ import java.util.UUID;
 public class PersonController {
 
     private final PersonService personService;
+
+    private final HouseService houseService;
 
     private final HouseHistoryService houseHistoryService;
 
@@ -49,39 +52,39 @@ public class PersonController {
     }
 
     @GetMapping("/{id}/houses")
-    public ResponseEntity<List<HouseResponse>> getByPerson(@PathVariable UUID id) {
-        List<HouseResponse> housesResponse = personService.getHousesByPersonUuid(id);
+    public ResponseEntity<Page<HouseResponse>> getByPerson(@PathVariable UUID id, Pageable pageable) {
+        Page<HouseResponse> housesResponse = houseService.getHousesByPersonUuid(id, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(housesResponse);
     }
 
     @GetMapping("/search/")
-    public ResponseEntity<List<PersonResponse>> getByNameMatches(@PathVariable String name) {
-        List<PersonResponse> personsResponse = personService.getByNameMatches(name);
+    public ResponseEntity<Page<PersonResponse>> getByNameMatches(@PathVariable String name, Pageable pageable) {
+        Page<PersonResponse> personsResponse = personService.getByNameMatches(name, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personsResponse);
     }
 
     @GetMapping("/{id}/tenants")
-    public ResponseEntity<List<HouseResponse>> getHousesByTenant(@PathVariable UUID id) {
-        List<HouseResponse> personResponses = houseHistoryService.getHousesByTenantUuid(id);
+    public ResponseEntity<Page<HouseResponse>> getHousesByTenant(@PathVariable UUID id, Pageable pageable) {
+        Page<HouseResponse> personResponses = houseHistoryService.getHousesByTenantUuid(id, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personResponses);
     }
 
     @GetMapping("/{id}/owners")
-    public ResponseEntity<List<HouseResponse>> getHousesByOwner(@PathVariable UUID id) {
-        List<HouseResponse> personResponses = houseHistoryService.getHousesByOwnerUuid(id);
+    public ResponseEntity<Page<HouseResponse>> getHousesByOwner(@PathVariable UUID id, Pageable pageable) {
+        Page<HouseResponse> personResponses = houseHistoryService.getHousesByOwnerUuid(id, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personResponses);
     }
 
     @PostMapping
-    public ResponseEntity<PersonResponse> create(@RequestBody PersonRequest personRequest) {
+    public ResponseEntity<PersonResponse> create(@RequestBody @Valid PersonRequest personRequest) {
         PersonResponse personResponse = personService.create(personRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -89,7 +92,7 @@ public class PersonController {
     }
 
     @PutMapping
-    public ResponseEntity<PersonResponse> update(@RequestBody PersonRequest personRequest) {
+    public ResponseEntity<PersonResponse> update(@RequestBody @Valid PersonRequest personRequest) {
         PersonResponse personResponse = personService.update(personRequest);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -97,7 +100,7 @@ public class PersonController {
     }
 
     @PatchMapping
-    public ResponseEntity<PersonResponse> updatePart(@RequestBody PersonRequest personRequest) {
+    public ResponseEntity<PersonResponse> updatePart(@RequestBody @Valid PersonRequest personRequest) {
         PersonResponse personResponse = personService.updatePart(personRequest);
 
         return ResponseEntity.status(HttpStatus.OK)

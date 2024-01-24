@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.data.HouseTestBuilder;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.data.request.PersonRequest;
-import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.entity.Person;
@@ -22,7 +21,6 @@ import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 import ru.clevertec.ecl.repository.PersonRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -80,25 +78,7 @@ class PersonServiceImplTest {
     }
 
     @Test
-    void getAllShouldReturnExpectedPersonResponseList() {
-        // given
-        List<Person> persons = PersonTestBuilder.builder().build().buildPersonList();
-        PersonResponse personResponse = PersonTestBuilder.builder().build().buildPersonResponse();
-        List<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponseList();
-
-        when(personRepository.findAll()).thenReturn(persons);
-        when(personMapper.toPersonResponse(any())).thenReturn(personResponse);
-
-        // when
-        List<PersonResponse> actual = personService.getAll();
-
-        // then
-        assertThat(actual)
-                .isEqualTo(expected);
-    }
-
-    @Test
-    void getAllPaginatedShouldReturnSameElementsAsExpected() {
+    void getAllShouldReturnSameElementsAsExpected() {
         // given
         int pageSize = 1;
         Page<Person> persons = PersonTestBuilder.builder().build().buildPersonPage();
@@ -221,9 +201,11 @@ class PersonServiceImplTest {
                 .withName("Елизавета")
                 .withSurname("Лисовская")
                 .build().buildPersonResponse();
+        House house = HouseTestBuilder.builder().build().buildHouse();
 
         when(personRepository.findByUuid(person.getUuid())).thenReturn(Optional.of(person));
         when(personMapper.merge(person, personRequest)).thenReturn(mergedPerson);
+        when(houseRepository.findByUuid(any())).thenReturn(Optional.ofNullable(house));
         when(personRepository.save(mergedPerson)).thenReturn(mergedPerson);
         when(personMapper.toPersonResponse(mergedPerson)).thenReturn(personResponse);
 
@@ -257,18 +239,19 @@ class PersonServiceImplTest {
 
 
     @Test
-    void getHousesByPersonUuidShouldReturnExpectedHouseResponseList() {
+    void getPersonsByHouseUuidShouldReturnExpectedPersonResponseList() {
         // given
-        UUID uuid = PersonTestBuilder.builder().build().buildPerson().getUuid();
-        List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
-        HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
+        UUID uuid = HouseTestBuilder.builder().build().buildHouse().getUuid();
+        Pageable pageable = Pageable.unpaged();
+        Page<Person> persons = PersonTestBuilder.builder().build().buildPersonPage();
+        PersonResponse personResponse = PersonTestBuilder.builder().build().buildPersonResponse();
+        Page<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponsePage();
 
-        when(personRepository.findHousesByPersonUuid(uuid)).thenReturn(houses);
-        when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
+        when(personRepository.findByOwnerHouses_Uuid(uuid, pageable)).thenReturn(persons);
+        when(personMapper.toPersonResponse(any())).thenReturn(personResponse);
 
         // when
-        List<HouseResponse> actual = personService.getHousesByPersonUuid(uuid);
+        Page<PersonResponse> actual = personService.getPersonsByHouseUuid(uuid, pageable);
 
         //then
         assertThat(actual)
@@ -278,16 +261,17 @@ class PersonServiceImplTest {
     @Test
     void getByNameMatchesShouldReturnExpectedHouseResponseList() {
         // given
+        Pageable pageable = Pageable.unpaged();
         String name = PersonTestBuilder.builder().build().buildPerson().getPassportNumber();
         PersonResponse personResponseToReturn = PersonTestBuilder.builder().build().buildPersonResponse();
-        List<Person> personsToReturn = PersonTestBuilder.builder().build().buildPersonList();
-        List<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponseList();
+        Page<Person> personsToReturn = PersonTestBuilder.builder().build().buildPersonPage();
+        Page<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponsePage();
 
-        when(personRepository.findByNameMatches(name)).thenReturn(personsToReturn);
+        when(personRepository.findByNameMatches(name, pageable)).thenReturn(personsToReturn);
         when(personMapper.toPersonResponse(any())).thenReturn(personResponseToReturn);
 
         // when
-        List<PersonResponse> actual = personService.getByNameMatches(name);
+        Page<PersonResponse> actual = personService.getByNameMatches(name, pageable);
 
         // then
         assertThat(actual)

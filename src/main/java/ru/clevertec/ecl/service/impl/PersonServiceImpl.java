@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.data.request.PersonRequest;
-import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.entity.Person;
@@ -65,20 +64,6 @@ public class PersonServiceImpl implements PersonService {
 
         Person created = personRepository.save(person);
         return personMapper.toPersonResponse(created);
-    }
-
-    /**
-     * Get all Person entities from the repository and return as PersonResponse.
-     *
-     * @return List of PersonResponse objects.
-     */
-    @Override
-    public List<PersonResponse> getAll() {
-        log.debug("SERVICE: GET ALL PERSONS.");
-
-        return personRepository.findAll().stream()
-                .map(personMapper::toPersonResponse)
-                .toList();
     }
 
     /**
@@ -176,29 +161,31 @@ public class PersonServiceImpl implements PersonService {
     /**
      * Get residents of a house from repository by House UUID.
      *
-     * @param id expected object type of UUID.
+     * @param id       expected object type of UUID.
+     * @param pageable expected an object type of Pageable.
      * @return List of PersonResponse objects.
      */
     @Override
-    public List<HouseResponse> getHousesByPersonUuid(UUID id) {
-        log.debug("SERVICE: GET PERSONS BY HOUSE UUID: " + id);
+    public Page<PersonResponse> getPersonsByHouseUuid(UUID id, Pageable pageable) {
+        log.debug("SERVICE: GET PERSONS BY HOUSE UUID: " + id + " WITH PAGEABLE: " + pageable);
 
-        return personRepository.findHousesByPersonUuid(id).stream()
-                .map(houseMapper::toHouseResponse)
-                .toList();
+        return personRepository.findByOwnerHouses_Uuid(id, pageable)
+                .map(personMapper::toPersonResponse);
     }
 
     /**
      * Get persons from repository by any matches name.
      *
-     * @param name expected string name.
+     * @param name     expected string name.
+     * @param pageable expected an object type of Pageable.
      * @return List of PersonResponse objects.
      */
     @Override
-    public List<PersonResponse> getByNameMatches(String name) {
-        return personRepository.findByNameMatches(name).stream()
-                .map(personMapper::toPersonResponse)
-                .toList();
+    public Page<PersonResponse> getByNameMatches(String name, Pageable pageable) {
+        log.debug("SERVICE: GET PERSONS BY NAME MATCHES: " + name + " WITH PAGEABLE: " + pageable);
+
+        return personRepository.findByNameMatches(name, pageable)
+                .map(personMapper::toPersonResponse);
     }
 
     private boolean isChanged(Person exist, PersonRequest personRequest) {

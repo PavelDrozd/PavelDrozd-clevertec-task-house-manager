@@ -1,15 +1,15 @@
 package ru.clevertec.ecl.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.data.request.PersonRequest;
-import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface PersonService extends AbstractService<UUID, PersonRequest, PersonResponse> {
 
-    List<HouseResponse> getHousesByPersonUuid(UUID id);
+    Page<PersonResponse> getPersonsByHouseUuid(UUID id, Pageable pageable);
 
-    List<PersonResponse> getByNameMatches(String name);
+    Page<PersonResponse> getByNameMatches(String name, Pageable pageable);
 }

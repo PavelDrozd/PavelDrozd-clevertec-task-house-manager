@@ -58,8 +58,8 @@ public class PersonTestBuilder {
 
     public PersonRequest buildPersonRequest() {
         return new PersonRequest(uuid, name, surname, sex, passportSeries, passportNumber,
-                HouseTestBuilder.builder().build().buildHouseRequest(),
-                List.of(HouseTestBuilder.builder().build().buildHouseRequest()));
+                HouseTestBuilder.builder().build().buildHouseRequest().uuid(),
+                List.of(HouseTestBuilder.builder().build().buildHouseRequest().uuid()));
     }
 
     public PersonResponse buildPersonResponse() {

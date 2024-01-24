@@ -47,35 +47,46 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "uuid", nullable = false)
+    @Column(name = "uuid",
+            unique = true,
+            nullable = false)
     private UUID uuid;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name",
+            nullable = false)
     private String name;
 
-    @Column(name = "surname", nullable = false)
+    @Column(name = "surname",
+            nullable = false)
     private String surname;
 
     @Convert(converter = PersonSexConverter.class)
-    @Column(name = "sex_id", nullable = false)
+    @Column(name = "sex_id",
+            nullable = false)
     private Sex sex;
 
-    @Column(name = "passport_series", nullable = false)
+    @Column(name = "passport_series",
+            nullable = false)
     private String passportSeries;
 
-    @Column(name = "passport_number", nullable = false)
+    @Column(name = "passport_number",
+            nullable = false)
     private String passportNumber;
 
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "create_date",
+            nullable = false)
     private LocalDateTime createDate;
 
-    @Column(name = "update_date", nullable = false)
+    @Column(name = "update_date",
+            nullable = false)
     private LocalDateTime updateDate;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "house_id", nullable = false)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},
+            fetch = FetchType.LAZY)
+    @JoinColumn(name = "house_id",
+            nullable = false)
     private House tenantHouse;
 
     @ToString.Exclude

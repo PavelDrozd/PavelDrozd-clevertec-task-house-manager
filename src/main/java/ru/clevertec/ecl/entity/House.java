@@ -40,29 +40,38 @@ public class House {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "uuid", unique = true, nullable = false)
+    @Column(name = "uuid",
+            unique = true,
+            nullable = false)
     private UUID uuid;
 
-    @Column(name = "country", nullable = false)
+    @Column(name = "country",
+            nullable = false)
     private String country;
 
-    @Column(name = "area", nullable = false)
+    @Column(name = "area",
+            nullable = false)
     private String area;
 
-    @Column(name = "city", nullable = false)
+    @Column(name = "city",
+            nullable = false)
     private String city;
 
-    @Column(name = "street", nullable = false)
+    @Column(name = "street",
+            nullable = false)
     private String street;
 
-    @Column(name = "number", nullable = false)
+    @Column(name = "number",
+            nullable = false)
     private String number;
 
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "create_date",
+            nullable = false)
     private LocalDateTime createDate;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},mappedBy = "tenantHouse")
+    @OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},
+            mappedBy = "tenantHouse")
     private List<Person> tenants;
 }

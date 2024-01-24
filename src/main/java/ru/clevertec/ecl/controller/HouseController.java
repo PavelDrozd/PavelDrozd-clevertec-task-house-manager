@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,8 +20,8 @@ import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.service.HouseHistoryService;
 import ru.clevertec.ecl.service.HouseService;
+import ru.clevertec.ecl.service.PersonService;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,6 +30,8 @@ import java.util.UUID;
 public class HouseController {
 
     private final HouseService houseService;
+
+    private final PersonService personService;
 
     private final HouseHistoryService houseHistoryService;
 
@@ -49,39 +52,39 @@ public class HouseController {
     }
 
     @GetMapping("/{id}/persons")
-    public ResponseEntity<List<PersonResponse>> getByHouse(@PathVariable UUID id) {
-        List<PersonResponse> personsResponse = houseService.getPersonsByHouseUuid(id);
+    public ResponseEntity<Page<PersonResponse>> getByHouse(@PathVariable UUID id, Pageable pageable) {
+        Page<PersonResponse> personsResponse = personService.getPersonsByHouseUuid(id, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personsResponse);
     }
 
     @GetMapping("/search/{name}")
-    public ResponseEntity<List<HouseResponse>> getByNameMatches(@PathVariable String name) {
-        List<HouseResponse> housesResponse = houseService.getByNameMatches(name);
+    public ResponseEntity<Page<HouseResponse>> getByNameMatches(@PathVariable String name, Pageable pageable) {
+        Page<HouseResponse> housesResponse = houseService.getByNameMatches(name, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(housesResponse);
     }
 
     @GetMapping("/{id}/tenants")
-    public ResponseEntity<List<PersonResponse>> getTenantsByHouse(@PathVariable UUID id) {
-        List<PersonResponse> personResponses = houseHistoryService.getTenantsByHouseUuid(id);
+    public ResponseEntity<Page<PersonResponse>> getTenantsByHouse(@PathVariable UUID id, Pageable pageable) {
+        Page<PersonResponse> personResponses = houseHistoryService.getTenantsByHouseUuid(id, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personResponses);
     }
 
     @GetMapping("/{id}/owners")
-    public ResponseEntity<List<PersonResponse>> getOwnersByHouse(@PathVariable UUID id) {
-        List<PersonResponse> personResponses = houseHistoryService.getOwnersByHouseUuid(id);
+    public ResponseEntity<Page<PersonResponse>> getOwnersByHouse(@PathVariable UUID id, Pageable pageable) {
+        Page<PersonResponse> personResponses = houseHistoryService.getOwnersByHouseUuid(id, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personResponses);
     }
 
     @PostMapping
-    public ResponseEntity<HouseResponse> create(@RequestBody HouseRequest houseRequest) {
+    public ResponseEntity<HouseResponse> create(@RequestBody @Valid HouseRequest houseRequest) {
         HouseResponse houseResponse = houseService.create(houseRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -89,7 +92,7 @@ public class HouseController {
     }
 
     @PutMapping
-    public ResponseEntity<HouseResponse> update(@RequestBody HouseRequest houseRequest) {
+    public ResponseEntity<HouseResponse> update(@RequestBody @Valid HouseRequest houseRequest) {
         HouseResponse houseResponse = houseService.update(houseRequest);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -97,7 +100,7 @@ public class HouseController {
     }
 
     @PatchMapping
-    public ResponseEntity<HouseResponse> updatePart(@RequestBody HouseRequest houseRequest) {
+    public ResponseEntity<HouseResponse> updatePart(@RequestBody @Valid HouseRequest houseRequest) {
         HouseResponse houseResponse = houseService.updatePart(houseRequest);
 
         return ResponseEntity.status(HttpStatus.OK)

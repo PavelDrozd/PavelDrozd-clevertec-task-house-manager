@@ -13,15 +13,12 @@ import ru.clevertec.ecl.data.HouseTestBuilder;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
-import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
-import ru.clevertec.ecl.entity.Person;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.HouseMapper;
 import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -74,25 +71,7 @@ class HouseServiceImplTest {
     }
 
     @Test
-    void getAllShouldReturnExpectedHouseResponseList() {
-        // given
-        List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
-        HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
-
-        when(houseRepository.findAll()).thenReturn(houses);
-        when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
-
-        // when
-        List<HouseResponse> actual = houseService.getAll();
-
-        // then
-        assertThat(actual)
-                .isEqualTo(expected);
-    }
-
-    @Test
-    void getAllPaginatedShouldReturnSameElementsAsExpected() {
+    void getAllShouldReturnSameElementsAsExpected() {
         // given
         int pageSize = 1;
         Page<House> houses = HouseTestBuilder.builder().build().buildHousePage();
@@ -243,18 +222,19 @@ class HouseServiceImplTest {
     }
 
     @Test
-    void getPersonsByHouseUuidShouldReturnExpectedPersonResponseList() {
+    void getHousesByPersonUuidShouldReturnExpectedHouseResponseList() {
         // given
-        UUID uuid = HouseTestBuilder.builder().build().buildHouse().getUuid();
-        List<Person> persons = PersonTestBuilder.builder().build().buildPersonList();
-        PersonResponse personResponse = PersonTestBuilder.builder().build().buildPersonResponse();
-        List<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponseList();
+        UUID uuid = PersonTestBuilder.builder().build().buildPerson().getUuid();
+        Pageable pageable = Pageable.unpaged();
+        Page<House> houses = HouseTestBuilder.builder().build().buildHousePage();
+        HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
+        Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
 
-        when(houseRepository.findPersonsByHouseUuid(uuid)).thenReturn(persons);
-        when(personMapper.toPersonResponse(any())).thenReturn(personResponse);
+        when(houseRepository.findByTenants_Uuid(uuid, pageable)).thenReturn(houses);
+        when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
 
         // when
-        List<PersonResponse> actual = houseService.getPersonsByHouseUuid(uuid);
+        Page<HouseResponse> actual = houseService.getHousesByPersonUuid(uuid, pageable);
 
         //then
         assertThat(actual)
@@ -264,16 +244,17 @@ class HouseServiceImplTest {
     @Test
     void getByNameMatchesShouldReturnExpectedHouseResponseList() {
         // given
+        Pageable pageable = Pageable.unpaged();
         String name = HouseTestBuilder.builder().build().buildHouse().getStreet();
         HouseResponse houseResponseToReturn = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<House> housesToReturn = HouseTestBuilder.builder().build().buildHouseList();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
+        Page<House> housesToReturn = HouseTestBuilder.builder().build().buildHousePage();
+        Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
 
-        when(houseRepository.findByNameMatches(name)).thenReturn(housesToReturn);
+        when(houseRepository.findByNameMatches(name, pageable)).thenReturn(housesToReturn);
         when(houseMapper.toHouseResponse(any())).thenReturn(houseResponseToReturn);
 
         // when
-        List<HouseResponse> actual = houseService.getByNameMatches(name);
+        Page<HouseResponse> actual = houseService.getByNameMatches(name, pageable);
 
         // then
         assertThat(actual)

@@ -1,18 +1,19 @@
 package ru.clevertec.ecl.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface HouseHistoryService {
 
-    List<PersonResponse> getTenantsByHouseUuid(UUID uuid);
+    Page<PersonResponse> getTenantsByHouseUuid(UUID uuid, Pageable pageable);
 
-    List<PersonResponse> getOwnersByHouseUuid(UUID uuid);
+    Page<PersonResponse> getOwnersByHouseUuid(UUID uuid, Pageable pageable);
 
-    List<HouseResponse> getHousesByTenantUuid(UUID uuid);
+    Page<HouseResponse> getHousesByTenantUuid(UUID uuid, Pageable pageable);
 
-    List<HouseResponse> getHousesByOwnerUuid(UUID uuid);
+    Page<HouseResponse> getHousesByOwnerUuid(UUID uuid, Pageable pageable);
 }
