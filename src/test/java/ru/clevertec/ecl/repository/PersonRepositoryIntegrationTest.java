@@ -1,44 +1,46 @@
 package ru.clevertec.ecl.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.clevertec.ecl.config.TestSpringConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
+import ru.clevertec.ecl.config.DBContainerConfig;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.entity.Person;
+import ru.clevertec.ecl.enums.Sex;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestSpringConfig.class)
+@Testcontainers
+@SpringBootTest
 public class PersonRepositoryIntegrationTest {
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            DockerImageName.parse(DBContainerConfig.POSTGRES_CONTAINER_VERSION));
 
     @Autowired
     private PersonRepository personRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Test
     public void findAllPaginationShouldReturnExpectedLimitOfHouses() {
         // given
-        int limit = 3;
-        int offset = 0;
+        int pageSize = 3;
+        Pageable pageable = Pageable.ofSize(pageSize);
         int expected = 3;
 
         // when
-        List<Person> persons = personRepository.findAll(limit, offset);
-        int actual = persons.size();
+        Page<Person> persons = personRepository.findByDeletedFalse(pageable);
+        int actual = persons.getSize();
 
         // then
         assertThat(actual)
@@ -52,7 +54,7 @@ public class PersonRepositoryIntegrationTest {
         Person expected = PersonTestBuilder.builder().build().buildPerson();
 
         // when
-        Person actual = personRepository.findById(uuid).orElseThrow();
+        Person actual = personRepository.findByUuidAndDeletedFalse(uuid).orElseThrow();
 
         // then
         assertThat(actual)
@@ -63,15 +65,26 @@ public class PersonRepositoryIntegrationTest {
                 .hasFieldOrPropertyWithValue(Person.Fields.passportSeries, expected.getPassportSeries())
                 .hasFieldOrPropertyWithValue(Person.Fields.passportNumber, expected.getPassportNumber());
     }
+
 
     @Test
     public void findPersonsByHouseUuidShouldReturnExpectedPerson() {
         // given
-        UUID uuid = UUID.fromString("ac602dde-9556-4ef5-954c-aeebc42c5056");
-        Person expected = PersonTestBuilder.builder().build().buildPerson();
+        UUID uuid = UUID.fromString("63f0df3a-b447-4d76-ba8f-638b81a99b07");
+        Pageable pageable = Pageable.unpaged();
+        Person expected = PersonTestBuilder.builder()
+                .withUuid(UUID.fromString("05242f3b-5e92-4ce4-a509-60c475dce50f"))
+                .withName("Софья")
+                .withSurname("Муравьева")
+                .withSex(Sex.FEMALE)
+                .withPassportSeries("MC")
+                .withPassportNumber("9737347")
+                .build().buildPerson();
 
         // when
-        Person actual = personRepository.findPersonsByHouseUuid(uuid).get(0);
+        Person actual = personRepository.findByOwnerHouses_UuidAndDeletedFalseAndOwnerHouses_DeletedFalse(uuid, pageable)
+                .getContent()
+                .get(0);
 
         // then
         assertThat(actual)
@@ -82,6 +95,7 @@ public class PersonRepositoryIntegrationTest {
                 .hasFieldOrPropertyWithValue(Person.Fields.passportSeries, expected.getPassportSeries())
                 .hasFieldOrPropertyWithValue(Person.Fields.passportNumber, expected.getPassportNumber());
     }
+
 
     @Test
     public void createShouldReturnExpectedHouse() {
@@ -90,7 +104,7 @@ public class PersonRepositoryIntegrationTest {
         Person expected = PersonTestBuilder.builder().build().buildPersonForCreate();
 
         // when
-        Person actual = personRepository.create(person);
+        Person actual = personRepository.save(person);
 
         // then
         assertThat(actual)
@@ -116,33 +130,12 @@ public class PersonRepositoryIntegrationTest {
                 .build().buildPersonForUpdate();
 
         // when
-        Person actual = personRepository.update(person);
+        Person actual = personRepository.save(person);
 
         // then
         assertThat(actual)
                 .hasFieldOrPropertyWithValue(Person.Fields.name, expected.getName())
                 .hasFieldOrPropertyWithValue(Person.Fields.passportSeries, expected.getPassportSeries())
                 .hasFieldOrPropertyWithValue(Person.Fields.passportNumber, expected.getPassportNumber());
-    }
-
-    @Test
-    public void deleteByIdShouldReturnExpectedUuid() {
-        // given
-        UUID uuid = PersonTestBuilder.builder().build().buildPersonForDelete().getUuid();
-        Person expected = PersonTestBuilder.builder().build().buildPersonForDelete();
-
-        // when
-        personRepository.deleteById(uuid);
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Person> criteriaQuery = criteriaBuilder.createQuery(Person.class);
-        Root<Person> personRoot = criteriaQuery.from(Person.class);
-
-        criteriaQuery.select(personRoot).where(criteriaBuilder.equal(personRoot.get("deleted"), true));
-
-        Person actual = entityManager.createQuery(criteriaQuery).getSingleResult();
-
-        // then
-        assertThat(actual)
-                .hasFieldOrPropertyWithValue(Person.Fields.uuid, expected.getUuid());
     }
 }

@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -39,32 +40,43 @@ public class House {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "uuid", unique = true, nullable = false)
+    @Column(name = "uuid",
+            unique = true,
+            nullable = false)
     private UUID uuid;
 
-    @Column(name = "area", nullable = false)
-    private String area;
-
-    @Column(name = "country", nullable = false)
+    @Column(name = "country",
+            nullable = false)
     private String country;
 
-    @Column(name = "city", nullable = false)
+    @Column(name = "area",
+            nullable = false)
+    private String area;
+
+    @Column(name = "city",
+            nullable = false)
     private String city;
 
-    @Column(name = "street", nullable = false)
+    @Column(name = "street",
+            nullable = false)
     private String street;
 
-    @Column(name = "number", nullable = false)
+    @Column(name = "number",
+            nullable = false)
     private String number;
 
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "create_date",
+            nullable = false)
     private LocalDateTime createDate;
 
-    @Column(name = "deleted", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @Column(name = "deleted")
     private boolean deleted;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "house")
-    private List<Person> residents;
+    @OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},
+            mappedBy = "tenantHouse")
+    private List<Person> tenants;
 }

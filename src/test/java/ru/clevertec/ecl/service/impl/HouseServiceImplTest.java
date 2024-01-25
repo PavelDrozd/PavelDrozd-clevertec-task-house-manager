@@ -7,6 +7,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.data.HouseTestBuilder;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.data.request.HouseRequest;
@@ -14,9 +16,9 @@ import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.HouseMapper;
+import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,6 +37,9 @@ class HouseServiceImplTest {
     @Mock
     private HouseMapper houseMapper;
 
+    @Mock
+    private PersonMapper personMapper;
+
     @InjectMocks
     private HouseServiceImpl houseService;
 
@@ -50,7 +55,7 @@ class HouseServiceImplTest {
         HouseResponse expected = HouseTestBuilder.builder().build().buildHouseResponse();
 
         when(houseMapper.toHouse(houseRequest)).thenReturn(house);
-        when(houseRepository.create(house)).thenReturn(house);
+        when(houseRepository.save(house)).thenReturn(house);
         when(houseMapper.toHouseResponse(house)).thenReturn(houseResponse);
 
         // when
@@ -66,37 +71,19 @@ class HouseServiceImplTest {
     }
 
     @Test
-    void getAllShouldReturnExpectedList() {
+    void getAllShouldReturnSameElementsAsExpected() {
         // given
-        List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
+        int pageSize = 1;
+        Page<House> houses = HouseTestBuilder.builder().build().buildHousePage();
+        Pageable pageable = Pageable.ofSize(pageSize);
         HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
+        Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
 
-        when(houseRepository.findAll()).thenReturn(houses);
+        when(houseRepository.findByDeletedFalse(Pageable.unpaged())).thenReturn(houses);
         when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
 
         // when
-        List<HouseResponse> actual = houseService.getAll();
-
-        // then
-        assertThat(actual)
-                .isEqualTo(expected);
-    }
-
-    @Test
-    void getAllPaginatedShouldReturnSameElementsAsExpected() {
-        // given
-        int limit = 1;
-        int offset = 0;
-        List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
-        HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
-
-        when(houseRepository.findAll(limit, offset)).thenReturn(houses);
-        when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
-
-        // when
-        List<HouseResponse> actual = houseService.getAll(limit, offset);
+        Page<HouseResponse> actual = houseService.getAll(Pageable.unpaged());
 
         // then
         assertThat(actual)
@@ -110,7 +97,7 @@ class HouseServiceImplTest {
         UUID uuid = house.getUuid();
         HouseResponse expected = HouseTestBuilder.builder().build().buildHouseResponse();
 
-        when(houseRepository.findById(uuid)).thenReturn(Optional.of(house));
+        when(houseRepository.findByUuidAndDeletedFalse(uuid)).thenReturn(Optional.of(house));
         when(houseMapper.toHouseResponse(house)).thenReturn(expected);
 
         // when
@@ -144,19 +131,27 @@ class HouseServiceImplTest {
     @Test
     void updateShouldCaptorExpectedHouse() {
         // given
-        HouseRequest houseRequest = HouseTestBuilder.builder().build().buildHouseRequest();
+        HouseRequest houseRequest = HouseTestBuilder.builder()
+                .withNumber("25")
+                .build().buildHouseRequest();
         House house = HouseTestBuilder.builder().build().buildHouse();
-        House expected = HouseTestBuilder.builder().build().buildHouse();
+        House mergedHouse = HouseTestBuilder.builder()
+                .withNumber("25")
+                .build().buildHouse();
+        House expected = HouseTestBuilder.builder()
+                .withNumber("25")
+                .build().buildHouse();
 
-        when(houseMapper.toHouse(houseRequest)).thenReturn(house);
-        when(houseRepository.findById(house.getUuid())).thenReturn(Optional.of(house));
+        when(houseRepository.findByUuidAndDeletedFalse(house.getUuid())).thenReturn(Optional.of(house));
+        when(houseMapper.mergeWithNulls(house, houseRequest)).thenReturn(mergedHouse);
+        when(houseRepository.save(mergedHouse)).thenReturn(mergedHouse);
 
         // when
         houseService.update(houseRequest);
 
         // then
         verify(houseRepository)
-                .update(houseCaptor.capture());
+                .save(houseCaptor.capture());
         House actual = houseCaptor.getValue();
 
         assertThat(actual)
@@ -170,46 +165,111 @@ class HouseServiceImplTest {
     }
 
     @Test
+    void updatePartShouldReturnExpectedHouseResponse() {
+        // given
+        HouseRequest houseRequest = HouseTestBuilder.builder()
+                .withCountry(null)
+                .withArea(null)
+                .withCity(null)
+                .withStreet("Пролетарская")
+                .withNumber("1")
+                .build().buildHouseRequest();
+        House house = HouseTestBuilder.builder().build().buildHouse();
+        House mergedHouse = HouseTestBuilder.builder()
+                .withStreet("Пролетарская")
+                .withNumber("1")
+                .build().buildHouse();
+        HouseResponse houseResponse = HouseTestBuilder.builder()
+                .withStreet("Пролетарская")
+                .withNumber("1")
+                .build().buildHouseResponse();
+        HouseResponse expected = HouseTestBuilder.builder()
+                .withStreet("Пролетарская")
+                .withNumber("1")
+                .build().buildHouseResponse();
+
+
+        when(houseRepository.findByUuidAndDeletedFalse(house.getUuid())).thenReturn(Optional.of(house));
+        when(houseMapper.merge(house, houseRequest)).thenReturn(mergedHouse);
+        when(houseRepository.save(mergedHouse)).thenReturn(mergedHouse);
+        when(houseMapper.toHouseResponse(mergedHouse)).thenReturn(houseResponse);
+
+        // when
+        HouseResponse actual = houseService.updatePart(houseRequest);
+
+        // then
+
+        assertThat(actual)
+                .hasFieldOrPropertyWithValue(House.Fields.uuid, expected.uuid())
+                .hasFieldOrPropertyWithValue(House.Fields.country, expected.country())
+                .hasFieldOrPropertyWithValue(House.Fields.area, expected.area())
+                .hasFieldOrPropertyWithValue(House.Fields.city, expected.city())
+                .hasFieldOrPropertyWithValue(House.Fields.street, expected.street())
+                .hasFieldOrPropertyWithValue(House.Fields.number, expected.number())
+                .hasFieldOrPropertyWithValue(House.Fields.createDate, expected.createDate());
+    }
+
+    @Test
     void deleteByIdShouldThrowNotFoundException() {
         // given
-        UUID uuid = UUID.fromString("0116a46b-d57b-4bbc-a697-d4a7ace791f5");
+        House house = HouseTestBuilder.builder().build().buildHouse();
+        UUID uuid = house.getUuid();
+        House houseForDelete = HouseTestBuilder.builder()
+                .withDeleted(false)
+                .build().buildHouse();
+        boolean expected = true;
+
+        when(houseRepository.findByUuidAndDeletedFalse(uuid)).thenReturn(Optional.of(house));
+        when(houseRepository.save(any())).thenReturn(houseForDelete);
 
         // when
         houseService.deleteById(uuid);
 
         // then
-        verify(houseRepository).deleteById(uuid);
+        verify(houseRepository)
+                .save(houseCaptor.capture());
+        House actual = houseCaptor.getValue();
+
+        assertThat(actual)
+                .hasFieldOrPropertyWithValue(House.Fields.deleted, expected);
     }
 
     @Test
-    void countShouldReturnExpectedValue() {
+    void getHousesByPersonUuidShouldReturnExpectedHouseResponseList() {
         // given
-        Integer expected = 100;
-        when(houseRepository.count()).thenReturn(100);
+        UUID uuid = PersonTestBuilder.builder().build().buildPerson().getUuid();
+        Pageable pageable = Pageable.unpaged();
+        Page<House> houses = HouseTestBuilder.builder().build().buildHousePage();
+        HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
+        Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
+
+        when(houseRepository.findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalse(uuid, pageable)).thenReturn(houses);
+        when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
 
         // when
-        Integer actual = houseService.count();
+        Page<HouseResponse> actual = houseService.getHousesByPersonUuid(uuid, pageable);
 
-        // then
+        //then
         assertThat(actual)
                 .isEqualTo(expected);
     }
 
     @Test
-    void getHousesByPersonUuid() {
+    void getByNameMatchesShouldReturnExpectedHouseResponseList() {
         // given
-        UUID uuid = PersonTestBuilder.builder().build().buildPerson().getUuid();
-        List<House> houses = HouseTestBuilder.builder().build().buildHouseList();
-        HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
-        List<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponseList();
+        Pageable pageable = Pageable.unpaged();
+        String name = HouseTestBuilder.builder().build().buildHouse().getStreet();
+        HouseResponse houseResponseToReturn = HouseTestBuilder.builder().build().buildHouseResponse();
+        Page<House> housesToReturn = HouseTestBuilder.builder().build().buildHousePage();
+        Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
 
-        when(houseRepository.findHousesByPersonUuid(uuid)).thenReturn(houses);
-        when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
+        when(houseRepository.findByNameMatches(name, pageable)).thenReturn(housesToReturn);
+        when(houseMapper.toHouseResponse(any())).thenReturn(houseResponseToReturn);
 
         // when
-        List<HouseResponse> actual = houseService.getHousesByPersonUuid(uuid);
+        Page<HouseResponse> actual = houseService.getByNameMatches(name, pageable);
 
-        //then
+        // then
         assertThat(actual)
                 .isEqualTo(expected);
     }

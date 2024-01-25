@@ -2,17 +2,23 @@ package ru.clevertec.ecl.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.clevertec.ecl.aspect.annotation.Create;
+import ru.clevertec.ecl.aspect.annotation.Delete;
+import ru.clevertec.ecl.aspect.annotation.Get;
+import ru.clevertec.ecl.aspect.annotation.Update;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.HouseMapper;
+import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 import ru.clevertec.ecl.service.HouseService;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -21,52 +27,49 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class HouseServiceImpl implements HouseService {
 
     /** HouseRepository is used to get objects from repository module. */
     private final HouseRepository houseRepository;
 
     /** HouseMapper for mapping DTO and entity House objects. */
-    private final HouseMapper mapper;
+    private final HouseMapper houseMapper;
+
+    /** PersonMapper for mapping DTO and entity Person objects. */
+    private final PersonMapper personMapper;
 
     /**
-     * Process HouseRequest object for create new House entity and send it to repository,
+     * Process HouseRequest object for create new House entity and send it to a repository,
      * then create HouseResponse object.
      *
      * @param houseRequest expected object of type HouseRequest.
      * @return created HouseResponse object.
      */
+    @Create
     @Override
     @Transactional
     public HouseResponse create(HouseRequest houseRequest) {
         log.debug("SERVICE: CREATE HOUSE: " + houseRequest);
-        House house = mapper.toHouse(houseRequest);
-        House saved = houseRepository.create(house);
-        return mapper.toHouseResponse(saved);
-    }
 
-    /**
-     * Get all House entities from repository and return as HouseResponse.
-     *
-     * @return List of HouseResponse objects.
-     */
-    @Override
-    public List<HouseResponse> getAll() {
-        log.debug("SERVICE: GET ALL HOUSES.");
-        return houseRepository.findAll().stream().map(mapper::toHouseResponse).toList();
+        House house = houseMapper.toHouse(houseRequest);
+        House saved = houseRepository.save(house);
+
+        return houseMapper.toHouseResponse(saved);
     }
 
     /**
      * Get all House entities from repository paginated with limit and offset, then return as HouseResponse.
      *
-     * @param limit  expected integer value of limit.
-     * @param offset expected integer value of offset.
+     * @param pageable expected an object type of Pageable.
      * @return List of HouseResponse objects.
      */
     @Override
-    public List<HouseResponse> getAll(int limit, int offset) {
-        log.debug("SERVICE: GET ALL HOUSES WITH LIMIT: " + limit + " OFFSET: " + offset);
-        return houseRepository.findAll(limit, offset).stream().map(mapper::toHouseResponse).toList();
+    public Page<HouseResponse> getAll(Pageable pageable) {
+        log.debug("SERVICE: GET ALL HOUSES WITH PAGEABLE: " + pageable);
+
+        return houseRepository.findByDeletedFalse(pageable)
+                .map(houseMapper::toHouseResponse);
     }
 
     /**
@@ -75,32 +78,66 @@ public class HouseServiceImpl implements HouseService {
      * @param id expected object type of UUID.
      * @return HouseResponse object.
      */
+    @Get
     @Override
     public HouseResponse getById(UUID id) {
         log.debug("SERVICE: GET HOUSE BY UUID: " + id);
-        return houseRepository.findById(id).map(mapper::toHouseResponse)
+
+        return houseRepository.findByUuidAndDeletedFalse(id)
+                .map(houseMapper::toHouseResponse)
                 .orElseThrow(() -> NotFoundException.of(House.class, id));
     }
 
     /**
-     * Update House in repository by accept HouseRequest object with updated data and return as HouseResponse.
+     * Update House in repository by accepted HouseRequest object with updated data and return as HouseResponse.
      *
-     * @param houseRequest expected object type of HouseRequest with filled fields.
+     * @param houseRequest expected an object type of HouseRequest with filled fields.
      * @return updated object HouseResponse.
      */
+    @Update
     @Override
     @Transactional
     public HouseResponse update(HouseRequest houseRequest) {
         log.debug("SERVICE: UPDATE HOUSE: " + houseRequest);
+
         UUID id = houseRequest.uuid();
-        House exist = houseRepository.findById(id).orElseThrow(() -> NotFoundException.of(House.class, id));
+        House exist = houseRepository.findByUuidAndDeletedFalse(id)
+                .orElseThrow(() -> NotFoundException.of(House.class, id));
 
         if (isChanged(exist, houseRequest)) {
-            return getById(houseRequest.uuid());
+            return houseMapper.toHouseResponse(exist);
         }
-        House house = mergeHouse(exist, houseRequest);
-        House updated = houseRepository.update(house);
-        return mapper.toHouseResponse(house);
+
+        House house = houseMapper.mergeWithNulls(exist, houseRequest);
+        House updatedHouse = houseRepository.save(house);
+
+        return houseMapper.toHouseResponse(updatedHouse);
+    }
+
+
+    /**
+     * Update House in repository by accepted HouseRequest object with updated part of data and return as HouseResponse.
+     *
+     * @param houseRequest expected an object type of HouseRequest with not fulfilled fields.
+     * @return updated object HouseResponse.
+     */
+    @Update
+    @Override
+    public HouseResponse updatePart(HouseRequest houseRequest) {
+        log.debug("SERVICE: UPDATE PART HOUSE: " + houseRequest);
+
+        UUID id = houseRequest.uuid();
+        House exist = houseRepository.findByUuidAndDeletedFalse(id)
+                .orElseThrow(() -> NotFoundException.of(House.class, id));
+
+        if (isChanged(exist, houseRequest)) {
+            return houseMapper.toHouseResponse(exist);
+        }
+
+        House mergedHouse = houseMapper.merge(exist, houseRequest);
+        House updatedHouse = houseRepository.save(mergedHouse);
+
+        return houseMapper.toHouseResponse(updatedHouse);
     }
 
     /**
@@ -108,47 +145,62 @@ public class HouseServiceImpl implements HouseService {
      *
      * @param id expected object type of UUID.
      */
+    @Delete
     @Override
+    @Transactional
     public void deleteById(UUID id) {
         log.debug("SERVICE: DELETE HOUSE BY UUID: " + id);
-        houseRepository.deleteById(id);
-    }
 
-    /**
-     * Count all entities in repository and return it as Integer.
-     *
-     * @return Integer value of objects being counted.
-     */
-    @Override
-    public int count() {
-        log.debug("SERVICE: COUNT HOUSES.");
-        return houseRepository.count();
+        House houseForDelete = houseRepository.findByUuidAndDeletedFalse(id)
+                .orElseThrow(() -> NotFoundException.of(House.class, id));
+        houseForDelete.setDeleted(true);
+        houseRepository.save(houseForDelete);
     }
 
     /**
      * Get houses from repository by Person UUID.
      *
-     * @param id expected object type of UUID.
+     * @param id       expected object type of UUID.
+     * @param pageable expected an object type of Pageable.
      * @return List of HouseResponse objects.
      */
     @Override
-    public List<HouseResponse> getHousesByPersonUuid(UUID id) {
-        log.debug("SERVICE: FIND HOUSES BY PERSON UUID: " + id);
-        return houseRepository.findHousesByPersonUuid(id).stream().map(mapper::toHouseResponse).toList();
+    public Page<HouseResponse> getHousesByPersonUuid(UUID id, Pageable pageable) {
+        log.debug("SERVICE: FIND HOUSES BY PERSON UUID: " + id + " WITH PAGEABLE: " + pageable);
+
+        return houseRepository.findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalse(id, pageable)
+                .map(houseMapper::toHouseResponse);
+    }
+
+    /**
+     * Get houses from repository by any matches name.
+     *
+     * @param name     expected string name.
+     * @param pageable expected an object type of Pageable.
+     * @return List of HouseResponse objects.
+     */
+    @Override
+    public Page<HouseResponse> getByNameMatches(String name, Pageable pageable) {
+        log.debug("SERVICE: GET HOUSES BY NAME MATCHES: " + name + " WITH PAGEABLE: " + pageable);
+
+        return houseRepository.findByNameMatches(name, pageable)
+                .map(houseMapper::toHouseResponse);
     }
 
     private boolean isChanged(House exist, HouseRequest houseRequest) {
-        return exist.getCountry().equals(houseRequest.country())
-               && exist.getArea().equals(houseRequest.area())
-               && exist.getCity().equals(houseRequest.city())
-               && exist.getStreet().equals(houseRequest.street())
-               && exist.getNumber().equals(houseRequest.number());
-    }
+        return houseRequest.country() != null
+               && !exist.getCountry().equals(houseRequest.country())
 
-    private House mergeHouse(House exist, HouseRequest houseRequest) {
-        House house = mapper.toHouse(houseRequest);
-        house.setId(exist.getId());
-        house.setCreateDate(exist.getCreateDate());
-        return house;
+               && houseRequest.area() != null
+               && !exist.getArea().equals(houseRequest.area())
+
+               && houseRequest.city() != null
+               && !exist.getCity().equals(houseRequest.city())
+
+               && houseRequest.street() != null
+               && !exist.getStreet().equals(houseRequest.street())
+
+               && houseRequest.number() != null
+               && !exist.getNumber().equals(houseRequest.number());
     }
 }

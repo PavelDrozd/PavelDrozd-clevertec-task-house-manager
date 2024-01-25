@@ -3,6 +3,7 @@ package ru.clevertec.ecl.data.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.experimental.FieldNameConstants;
+import ru.clevertec.ecl.constant.Constants;
 import ru.clevertec.ecl.enums.Sex;
 
 import java.time.LocalDateTime;
@@ -24,16 +25,16 @@ public record PersonResponse(
 
         String passportNumber,
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATA_FORMAT_ISO_8601)
         LocalDateTime createDate,
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATA_FORMAT_ISO_8601)
         LocalDateTime updateDate,
 
         @JsonIgnore
-        HouseResponse houseResponse,
+        HouseResponse tenantHouseResponse,
 
         @JsonIgnore
-        List<HouseResponse> houseResponses
+        List<HouseResponse> ownerHousesResponse
 ) {
 }

@@ -1,20 +1,19 @@
 package ru.clevertec.ecl.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AbstractService<K, V, R> {
 
     R create(V v);
 
-    List<R> getAll();
-
-    List<R> getAll(int limit, int offset);
+    Page<R> getAll(Pageable pageable);
 
     R getById(K id);
 
     R update(V v);
 
-    void deleteById(K id);
+    R updatePart(V v);
 
-    int count();
+    void deleteById(K id);
 }

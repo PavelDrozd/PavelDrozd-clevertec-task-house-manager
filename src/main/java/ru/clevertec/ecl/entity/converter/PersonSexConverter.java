@@ -1,11 +1,13 @@
 package ru.clevertec.ecl.entity.converter;
 
 import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import org.springframework.stereotype.Component;
 import ru.clevertec.ecl.enums.Sex;
 import ru.clevertec.ecl.exception.ValidationException;
 
 @Component
+@Converter
 public class PersonSexConverter implements AttributeConverter<Sex, Integer> {
 
     @Override
@@ -21,7 +23,7 @@ public class PersonSexConverter implements AttributeConverter<Sex, Integer> {
         return switch (dbData) {
             case 1 -> Sex.MALE;
             case 2 -> Sex.FEMALE;
-            default -> throw new ValidationException("Unexpected value: " + dbData);
+            default -> throw ValidationException.of(Sex.class, dbData);
         };
     }
 }

@@ -1,44 +1,45 @@
 package ru.clevertec.ecl.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.clevertec.ecl.config.TestSpringConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
+import ru.clevertec.ecl.config.DBContainerConfig;
 import ru.clevertec.ecl.data.HouseTestBuilder;
 import ru.clevertec.ecl.entity.House;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestSpringConfig.class)
+@Testcontainers
+@SpringBootTest
 public class HouseRepositoryIntegrationTest {
 
-    @Autowired
-    private HouseRepository houseRepository;
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            DockerImageName.parse(DBContainerConfig.POSTGRES_CONTAINER_VERSION));
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    HouseRepository houseRepository;
 
     @Test
     public void findAllPaginationShouldReturnExpectedLimitOfHouses() {
         // given
-        int limit = 3;
-        int offset = 0;
+        int pageSize = 3;
+        Pageable pageable = Pageable.ofSize(pageSize);
         int expected = 3;
 
         // when
-        List<House> houses = houseRepository.findAll(limit, offset);
-        int actual = houses.size();
+        Page<House> houses = houseRepository.findByDeletedFalse(pageable);
+        int actual = houses.getSize();
 
         // then
         assertThat(actual)
@@ -52,7 +53,7 @@ public class HouseRepositoryIntegrationTest {
         House expected = HouseTestBuilder.builder().build().buildHouse();
 
         // when
-        House actual = houseRepository.findById(uuid).orElseThrow();
+        House actual = houseRepository.findByUuidAndDeletedFalse(uuid).orElseThrow();
 
         // then
         assertThat(actual)
@@ -68,10 +69,20 @@ public class HouseRepositoryIntegrationTest {
     public void findHousesByPersonUuidShouldReturnExpectedHouse() {
         // given
         UUID uuid = UUID.fromString("03736b7f-3ca4-4af7-99ac-07628a7d8fe6");
-        House expected = HouseTestBuilder.builder().build().buildHouse();
+        Pageable pageable = Pageable.unpaged();
+        House expected = HouseTestBuilder.builder()
+                .withUuid(UUID.fromString("061783b1-c63b-4fb2-a9d0-9d90842911a2"))
+                .withCountry("Беларусь")
+                .withArea("Минская область")
+                .withCity("Солигорск")
+                .withStreet("К.Заслонова")
+                .withNumber("52")
+                .build().buildHouse();
 
         // when
-        House actual = houseRepository.findHousesByPersonUuid(uuid).get(0);
+        House actual = houseRepository.findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalse(uuid, pageable)
+                .getContent()
+                .get(0);
 
         // then
         assertThat(actual)
@@ -90,7 +101,7 @@ public class HouseRepositoryIntegrationTest {
         House expected = HouseTestBuilder.builder().build().buildHouseForCreate();
 
         // when
-        House actual = houseRepository.create(house);
+        House actual = houseRepository.save(house);
 
         // then
         assertThat(actual)
@@ -112,31 +123,10 @@ public class HouseRepositoryIntegrationTest {
                 .build().buildHouseForUpdate();
 
         // when
-        House actual = houseRepository.update(house);
+        House actual = houseRepository.save(house);
 
         // then
         assertThat(actual)
                 .hasFieldOrPropertyWithValue(House.Fields.number, expected.getNumber());
-    }
-
-    @Test
-    public void deleteByIdShouldReturnExpectedUuid() {
-        // given
-        UUID uuid = HouseTestBuilder.builder().build().buildHouseForDelete().getUuid();
-        House expected = HouseTestBuilder.builder().build().buildHouseForDelete();
-
-        // when
-        houseRepository.deleteById(uuid);
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<House> criteriaQuery = criteriaBuilder.createQuery(House.class);
-        Root<House> houseRoot = criteriaQuery.from(House.class);
-
-        criteriaQuery.select(houseRoot).where(criteriaBuilder.equal(houseRoot.get("deleted"), true));
-
-        House actual = entityManager.createQuery(criteriaQuery).getSingleResult();
-
-        // then
-        assertThat(actual)
-                .hasFieldOrPropertyWithValue(House.Fields.uuid, expected.getUuid());
     }
 }
