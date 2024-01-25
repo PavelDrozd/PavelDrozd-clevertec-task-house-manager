@@ -1,0 +1,17 @@
+database:
+  driver: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:5432/house-manager
+  user: postgres
+  password: root
+hibernate:
+  transaction:
+    jta:
+      platform: org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform
+  ogm:
+    datastore:
+      provider: infinispan
+  use_sql_comments: true
+  show_sql: true
+  format_sql: true
+pagination:
+  limit: 15
