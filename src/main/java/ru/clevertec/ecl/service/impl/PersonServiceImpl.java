@@ -24,6 +24,7 @@ import ru.clevertec.ecl.service.PersonService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 /**
@@ -280,6 +281,6 @@ public class PersonServiceImpl implements PersonService {
         return ownerHousesRequest.stream()
                 .map(houseRepository::findByUuidAndDeletedFalse)
                 .map(Optional::orElseThrow)
-                .toList();
+                .collect(Collectors.toList());
     }
 }

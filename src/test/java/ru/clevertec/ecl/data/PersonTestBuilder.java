@@ -142,4 +142,104 @@ public class PersonTestBuilder {
                 .withOwnerHouses(null)
                 .build().buildPerson();
     }
+
+    public PersonRequest buildPersonRequestForCreate() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(null)
+                .withName("Евгений")
+                .withSurname("Борисов")
+                .withSex(Sex.MALE)
+                .withPassportSeries("MC")
+                .withPassportNumber("1234567")
+                .withCreateDate(null)
+                .withUpdateDate(null)
+                .withResidentHouse(HouseTestBuilder.builder().build().buildHouseForCreate())
+                .withOwnerHouses(null)
+                .build().buildPersonRequest();
+    }
+
+    public PersonRequest buildPersonRequestForUpdate() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("fd839347-a17c-44f0-a8b7-77b53d8a652d"))
+                .withName("Полина")
+                .withSurname("Леонова")
+                .withSex(Sex.FEMALE)
+                .withPassportSeries("MC")
+                .withPassportNumber("2223333")
+                .withCreateDate(null)
+                .withUpdateDate(null)
+                .withResidentHouse(residentHouse)
+                .withOwnerHouses(null)
+                .build().buildPersonRequest();
+    }
+
+    public PersonRequest buildPersonRequestForDelete() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("789c8c63-a58d-4e50-a4b4-33c15debfaf3"))
+                .withName("Андрей")
+                .withSurname("Румянцев")
+                .withSex(Sex.MALE)
+                .withPassportSeries("MP")
+                .withPassportNumber("9474383")
+                .withCreateDate(null)
+                .withUpdateDate(null)
+                .withResidentHouse(residentHouse)
+                .withOwnerHouses(null)
+                .build().buildPersonRequest();
+    }
+
+    public PersonResponse buildPersonResponseForCreate() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(null)
+                .withName("Евгений")
+                .withSurname("Борисов")
+                .withSex(Sex.MALE)
+                .withPassportSeries("MC")
+                .withPassportNumber("1234567")
+                .withCreateDate(null)
+                .withUpdateDate(null)
+                .withResidentHouse(HouseTestBuilder.builder().build().buildHouseForCreate())
+                .withOwnerHouses(null)
+                .build().buildPersonResponse();
+    }
+
+    public PersonResponse buildPersonResponseForUpdate() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("fd839347-a17c-44f0-a8b7-77b53d8a652d"))
+                .withName("Полина")
+                .withSurname("Леонова")
+                .withSex(Sex.FEMALE)
+                .withPassportSeries("MC")
+                .withPassportNumber("2223333")
+                .withCreateDate(LocalDateTime.of(
+                        2023, 12, 28, 7, 12, 15, 156))
+                .withUpdateDate(LocalDateTime.of(
+                        2023, 12, 28, 7, 12, 15, 156))
+                .withResidentHouse(residentHouse)
+                .withOwnerHouses(List.of(residentHouse))
+                .build().buildPersonResponse();
+    }
+
+    public PersonResponse buildPersonResponseForDelete() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("789c8c63-a58d-4e50-a4b4-33c15debfaf3"))
+                .withName("Андрей")
+                .withSurname("Румянцев")
+                .withSex(Sex.MALE)
+                .withPassportSeries("MP")
+                .withPassportNumber("9474383")
+                .withCreateDate(LocalDateTime.of(
+                        2023, 9, 29, 6, 5, 15, 156))
+                .withUpdateDate(LocalDateTime.of(
+                        2023, 9, 29, 6, 5, 15, 156))
+                .withResidentHouse(residentHouse)
+                .withOwnerHouses(null)
+                .build().buildPersonResponse();
+    }
 }

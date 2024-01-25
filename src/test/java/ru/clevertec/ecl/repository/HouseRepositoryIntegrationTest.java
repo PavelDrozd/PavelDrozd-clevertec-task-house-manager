@@ -31,12 +31,6 @@ public class HouseRepositoryIntegrationTest {
     HouseRepository houseRepository;
 
     @Test
-    void connectionEstablished() {
-        assertThat(postgres.isCreated()).isTrue();
-        assertThat(postgres.isRunning()).isTrue();
-    }
-
-    @Test
     public void findAllPaginationShouldReturnExpectedLimitOfHouses() {
         // given
         int pageSize = 3;

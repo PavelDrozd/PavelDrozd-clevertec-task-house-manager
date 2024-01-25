@@ -114,4 +114,81 @@ public class HouseTestBuilder {
                         2024, 1, 3, 9, 12, 15, 156))
                 .build().buildHouse();
     }
+
+    public HouseRequest buildHouseRequestForCreate() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(null)
+                .withCountry("Беларусь")
+                .withArea("Гомельская область")
+                .withCity("Гомель")
+                .withStreet("Центральная")
+                .withNumber("1")
+                .withCreateDate(null)
+                .build().buildHouseRequest();
+    }
+
+    public HouseRequest buildHouseRequestForUpdate() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("78cdcc8d-07df-496b-86aa-65aadd4cfc77"))
+                .withCountry("Беларусь")
+                .withArea("Могилевская область")
+                .withCity("Могилев")
+                .withStreet("Петрозаводская")
+                .withNumber("3")
+                .withCreateDate(null)
+                .build().buildHouseRequest();
+    }
+
+    public HouseRequest buildHouseRequestForDelete() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("8ca3955d-b436-471d-872f-f2ce07ac3f15"))
+                .withCountry("Беларусь")
+                .withArea("Витебская область")
+                .withCity("Витебск")
+                .withStreet("Чкалова")
+                .withNumber("1")
+                .withCreateDate(null)
+                .build().buildHouseRequest();
+    }
+    public HouseResponse buildHouseResponseForCreate() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(null)
+                .withCountry("Беларусь")
+                .withArea("Гомельская область")
+                .withCity("Гомель")
+                .withStreet("Центральная")
+                .withNumber("1")
+                .withCreateDate(null)
+                .build().buildHouseResponse();
+    }
+
+    public HouseResponse buildHouseResponseForUpdate() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("78cdcc8d-07df-496b-86aa-65aadd4cfc77"))
+                .withCountry("Беларусь")
+                .withArea("Могилевская область")
+                .withCity("Могилев")
+                .withStreet("Петрозаводская")
+                .withNumber("3")
+                .withCreateDate(null)
+                .build().buildHouseResponse();
+    }
+
+    public HouseResponse buildHouseResponseForDelete() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("8ca3955d-b436-471d-872f-f2ce07ac3f15"))
+                .withCountry("Беларусь")
+                .withArea("Витебская область")
+                .withCity("Витебск")
+                .withStreet("Чкалова")
+                .withNumber("1")
+                .withCreateDate(null)
+                .build().buildHouseResponse();
+    }
 }
