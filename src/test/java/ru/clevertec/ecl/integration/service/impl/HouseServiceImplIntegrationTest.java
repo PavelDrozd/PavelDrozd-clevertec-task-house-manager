@@ -47,7 +47,7 @@ public class HouseServiceImplIntegrationTest {
     HouseServiceImpl houseService;
 
     @Test
-    void check() throws Exception {
+    void shouldAssertAllHouseResponses() throws Exception {
         // given
         UUID uuid = HouseTestBuilder.builder().build().buildHouse().getUuid();
         HouseRequest houseRequestForCreate = HouseTestBuilder.builder().build().buildHouseRequestForCreate();

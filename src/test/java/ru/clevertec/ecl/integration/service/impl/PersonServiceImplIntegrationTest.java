@@ -47,7 +47,7 @@ public class PersonServiceImplIntegrationTest {
     PersonService personService;
 
     @Test
-    void check() throws Exception {
+    void shouldAssertAllHouseResponses() throws Exception {
         // given
         UUID uuid = PersonTestBuilder.builder().build().buildPerson().getUuid();
         PersonRequest houseRequestForCreate = PersonTestBuilder.builder().build().buildPersonRequestForCreate();
