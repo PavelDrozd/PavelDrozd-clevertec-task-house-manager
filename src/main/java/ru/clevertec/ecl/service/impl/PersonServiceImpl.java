@@ -6,6 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.clevertec.ecl.aspect.annotation.Create;
+import ru.clevertec.ecl.aspect.annotation.Delete;
+import ru.clevertec.ecl.aspect.annotation.Get;
+import ru.clevertec.ecl.aspect.annotation.Update;
 import ru.clevertec.ecl.data.request.PersonRequest;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
@@ -50,6 +54,7 @@ public class PersonServiceImpl implements PersonService {
      * @param personRequest expected object of type PersonRequest.
      * @return created PersonResponse object.
      */
+    @Create
     @Override
     @Transactional
     public PersonResponse create(PersonRequest personRequest) {
@@ -86,6 +91,7 @@ public class PersonServiceImpl implements PersonService {
      * @param id expected object type of UUID.
      * @return PersonResponse object.
      */
+    @Get
     @Override
     public PersonResponse getById(UUID id) {
         log.debug("SERVICE: GET PERSON BY UUID: " + id);
@@ -101,6 +107,7 @@ public class PersonServiceImpl implements PersonService {
      * @param personRequest expected an object type of PersonRequest with filled fields.
      * @return updated object PersonResponse.
      */
+    @Update
     @Override
     @Transactional
     public PersonResponse update(PersonRequest personRequest) {
@@ -127,6 +134,7 @@ public class PersonServiceImpl implements PersonService {
      * @param personRequest expected an object type of PersonRequest with not fulfilled fields.
      * @return updated object PersonResponse.
      */
+    @Update
     @Override
     @Transactional
     public PersonResponse updatePart(PersonRequest personRequest) {
@@ -151,6 +159,7 @@ public class PersonServiceImpl implements PersonService {
      *
      * @param id expected object type of UUID.
      */
+    @Delete
     @Override
     public void deleteById(UUID id) {
         log.debug("SERVICE: DELETE PERSON BY UUID: " + id);

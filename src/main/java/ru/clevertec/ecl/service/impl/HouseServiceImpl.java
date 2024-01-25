@@ -6,6 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.clevertec.ecl.aspect.annotation.Create;
+import ru.clevertec.ecl.aspect.annotation.Delete;
+import ru.clevertec.ecl.aspect.annotation.Get;
+import ru.clevertec.ecl.aspect.annotation.Update;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.entity.House;
@@ -42,6 +46,7 @@ public class HouseServiceImpl implements HouseService {
      * @param houseRequest expected object of type HouseRequest.
      * @return created HouseResponse object.
      */
+    @Create
     @Override
     @Transactional
     public HouseResponse create(HouseRequest houseRequest) {
@@ -73,6 +78,7 @@ public class HouseServiceImpl implements HouseService {
      * @param id expected object type of UUID.
      * @return HouseResponse object.
      */
+    @Get
     @Override
     public HouseResponse getById(UUID id) {
         log.debug("SERVICE: GET HOUSE BY UUID: " + id);
@@ -88,6 +94,7 @@ public class HouseServiceImpl implements HouseService {
      * @param houseRequest expected an object type of HouseRequest with filled fields.
      * @return updated object HouseResponse.
      */
+    @Update
     @Override
     @Transactional
     public HouseResponse update(HouseRequest houseRequest) {
@@ -114,6 +121,7 @@ public class HouseServiceImpl implements HouseService {
      * @param houseRequest expected an object type of HouseRequest with not fulfilled fields.
      * @return updated object HouseResponse.
      */
+    @Update
     @Override
     public HouseResponse updatePart(HouseRequest houseRequest) {
         log.debug("SERVICE: UPDATE PART HOUSE: " + houseRequest);
@@ -137,6 +145,7 @@ public class HouseServiceImpl implements HouseService {
      *
      * @param id expected object type of UUID.
      */
+    @Delete
     @Override
     public void deleteById(UUID id) {
         log.debug("SERVICE: DELETE HOUSE BY UUID: " + id);
