@@ -59,7 +59,7 @@ public class PersonController {
                 .body(housesResponse);
     }
 
-    @GetMapping("/search/")
+    @GetMapping("/search/{name}")
     public ResponseEntity<Page<PersonResponse>> getByNameMatches(@PathVariable String name, Pageable pageable) {
         Page<PersonResponse> personsResponse = personService.getByNameMatches(name, pageable);
 
