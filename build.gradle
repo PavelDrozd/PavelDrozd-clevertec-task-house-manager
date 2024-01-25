@@ -24,6 +24,7 @@ repositories {
 
 ext {
     mapstructVersion = '1.5.5.Final'
+    springdocOpenapiStarterVersion = '2.2.0'
 }
 
 dependencies {
@@ -35,6 +36,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.liquibase:liquibase-core'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocOpenapiStarterVersion}"
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 
     runtimeOnly 'org.postgresql:postgresql'

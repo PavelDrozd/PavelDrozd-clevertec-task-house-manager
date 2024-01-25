@@ -1,5 +1,11 @@
 package ru.clevertec.ecl.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +33,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/persons")
+@Tag(name = "Person")
 public class PersonController {
 
     private final PersonService personService;
@@ -35,6 +42,42 @@ public class PersonController {
 
     private final HouseHistoryService houseHistoryService;
 
+    @Operation(
+            method = "GET",
+            summary = "Get person by UUID",
+            description = "Get person by accept UUID as path variable",
+            parameters = @Parameter(
+                    name = "UUID",
+                    schema = @Schema(
+                            oneOf = UUID.class
+                    ),
+                    required = true,
+                    description = "Universal unique identifier of object"
+            ),
+            responses = {
+                    @ApiResponse(
+                            description = "Get house",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Bad request",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Not found",
+                            responseCode = "404",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponse> get(@PathVariable UUID id) {
         PersonResponse personResponse = personService.getById(id);
@@ -43,6 +86,27 @@ public class PersonController {
                 .body(personResponse);
     }
 
+    @Operation(
+            method = "GET",
+            summary = "Get persons",
+            description = "Get persons",
+            parameters = @Parameter(
+                    name = "Pageable",
+                    schema = @Schema(
+                            implementation = Pageable.class
+                    ),
+                    description = "Pageable object for pagination with size, page and sort parameters"
+            ),
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @GetMapping
     public ResponseEntity<Page<PersonResponse>> getAll(Pageable pageable) {
         Page<PersonResponse> persons = personService.getAll(pageable);
@@ -51,6 +115,37 @@ public class PersonController {
                 .body(persons);
     }
 
+    @Operation(
+            method = "GET",
+            summary = "Get houses by person UUID",
+            description = "Get houses who own by person",
+            parameters = {
+                    @Parameter(
+                            name = "UUID",
+                            schema = @Schema(
+                                    oneOf = UUID.class
+                            ),
+                            required = true,
+                            description = "Universal unique identifier of object"
+                    ),
+                    @Parameter(
+                            name = "Pageable",
+                            schema = @Schema(
+                                    implementation = Pageable.class
+                            ),
+                            description = "Pageable object for pagination with size, page and sort parameters"
+                    ),
+            },
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @GetMapping("/{id}/houses")
     public ResponseEntity<Page<HouseResponse>> getByPerson(@PathVariable UUID id, Pageable pageable) {
         Page<HouseResponse> housesResponse = houseService.getHousesByPersonUuid(id, pageable);
@@ -59,6 +154,37 @@ public class PersonController {
                 .body(housesResponse);
     }
 
+    @Operation(
+            method = "GET",
+            summary = "Get persons by matches",
+            description = "Get persons when accepted parameter name match with house fields",
+            parameters = {
+                    @Parameter(
+                            name = "UUID",
+                            schema = @Schema(
+                                    oneOf = UUID.class
+                            ),
+                            required = true,
+                            description = "Universal unique identifier of object"
+                    ),
+                    @Parameter(
+                            name = "Pageable",
+                            schema = @Schema(
+                                    implementation = Pageable.class
+                            ),
+                            description = "Pageable object for pagination with size, page and sort parameters"
+                    ),
+            },
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @GetMapping("/search/{name}")
     public ResponseEntity<Page<PersonResponse>> getByNameMatches(@PathVariable String name, Pageable pageable) {
         Page<PersonResponse> personsResponse = personService.getByNameMatches(name, pageable);
@@ -67,6 +193,37 @@ public class PersonController {
                 .body(personsResponse);
     }
 
+    @Operation(
+            method = "GET",
+            summary = "Get history of houses by tenant",
+            description = "Get houses where that person live or have lived",
+            parameters = {
+                    @Parameter(
+                            name = "UUID",
+                            schema = @Schema(
+                                    oneOf = UUID.class
+                            ),
+                            required = true,
+                            description = "Universal unique identifier of object"
+                    ),
+                    @Parameter(
+                            name = "Pageable",
+                            schema = @Schema(
+                                    implementation = Pageable.class
+                            ),
+                            description = "Pageable object for pagination with size, page and sort parameters"
+                    ),
+            },
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @GetMapping("/{id}/tenants")
     public ResponseEntity<Page<HouseResponse>> getHousesByTenant(@PathVariable UUID id, Pageable pageable) {
         Page<HouseResponse> personResponses = houseHistoryService.getHousesByTenantUuid(id, pageable);
@@ -75,6 +232,37 @@ public class PersonController {
                 .body(personResponses);
     }
 
+    @Operation(
+            method = "GET",
+            summary = "Get history of houses by owner",
+            description = "Get houses where that person own or have owned",
+            parameters = {
+                    @Parameter(
+                            name = "UUID",
+                            schema = @Schema(
+                                    oneOf = UUID.class
+                            ),
+                            required = true,
+                            description = "Universal unique identifier of object"
+                    ),
+                    @Parameter(
+                            name = "Pageable",
+                            schema = @Schema(
+                                    implementation = Pageable.class
+                            ),
+                            description = "Pageable object for pagination with size, page and sort parameters"
+                    ),
+            },
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @GetMapping("/{id}/owners")
     public ResponseEntity<Page<HouseResponse>> getHousesByOwner(@PathVariable UUID id, Pageable pageable) {
         Page<HouseResponse> personResponses = houseHistoryService.getHousesByOwnerUuid(id, pageable);
@@ -83,6 +271,44 @@ public class PersonController {
                 .body(personResponses);
     }
 
+    @Operation(
+            method = "POST",
+            summary = "Create person",
+            description = "Create person of accepted person request body",
+            parameters = {
+                    @Parameter(
+                            name = "PersonRequest",
+                            required = true,
+                            schema = @Schema(
+                                    anyOf = PersonRequest.class
+                            ),
+                            description = "Object type of person request"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Bad request",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Not found",
+                            responseCode = "404",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @PostMapping
     public ResponseEntity<PersonResponse> create(@RequestBody @Valid PersonRequest personRequest) {
         PersonResponse personResponse = personService.create(personRequest);
@@ -91,6 +317,44 @@ public class PersonController {
                 .body(personResponse);
     }
 
+    @Operation(
+            method = "PUT",
+            summary = "Update person",
+            description = "Update person of accepted person request body",
+            parameters = {
+                    @Parameter(
+                            name = "PersonRequest",
+                            required = true,
+                            schema = @Schema(
+                                    anyOf = PersonRequest.class
+                            ),
+                            description = "Object type of person request"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Bad request",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Not found",
+                            responseCode = "404",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @PutMapping
     public ResponseEntity<PersonResponse> update(@RequestBody @Valid PersonRequest personRequest) {
         PersonResponse personResponse = personService.update(personRequest);
@@ -99,6 +363,44 @@ public class PersonController {
                 .body(personResponse);
     }
 
+    @Operation(
+            method = "PATCH",
+            summary = "Update part of person",
+            description = "Update part of person of accepted person request body",
+            parameters = {
+                    @Parameter(
+                            name = "PersonRequest",
+                            required = true,
+                            schema = @Schema(
+                                    anyOf = PersonRequest.class
+                            ),
+                            description = "Object type of person request"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Bad request",
+                            responseCode = "400",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Not found",
+                            responseCode = "404",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @PatchMapping
     public ResponseEntity<PersonResponse> updatePart(@RequestBody @Valid PersonRequest personRequest) {
         PersonResponse personResponse = personService.updatePart(personRequest);
@@ -107,6 +409,35 @@ public class PersonController {
                 .body(personResponse);
     }
 
+    @Operation(
+            method = "DELETE",
+            summary = "Delete person by UUID",
+            description = "Delete person by accept UUID as path variable",
+            parameters = @Parameter(
+                    name = "UUID",
+                    schema = @Schema(
+                            oneOf = UUID.class
+                    ),
+                    required = true,
+                    description = "Universal unique identifier of object"
+            ),
+            responses = {
+                    @ApiResponse(
+                            description = "Get house",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Not found",
+                            responseCode = "404",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         personService.deleteById(id);
