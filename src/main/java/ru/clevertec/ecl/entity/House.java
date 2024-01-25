@@ -71,6 +71,11 @@ public class House {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},
             mappedBy = "tenantHouse")
     private List<Person> tenants;

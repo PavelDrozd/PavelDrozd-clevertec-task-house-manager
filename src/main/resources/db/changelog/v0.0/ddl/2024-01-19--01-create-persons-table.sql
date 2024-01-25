@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS  persons (
     passport_number varchar(8) NOT NULL,
     create_date TIMESTAMP NOT NULL,
     update_date TIMESTAMP NOT NULL,
-    house_id BIGINT NOT NULL REFERENCES houses
+    house_id BIGINT NOT NULL REFERENCES houses,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 ALTER TABLE persons ADD CONSTRAINT unique_passport_series_number UNIQUE (passport_series, passport_number);

@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS  houses (
 	city VARCHAR(30) NOT NULL,
 	street VARCHAR(50) NOT NULL,
 	"number" VARCHAR(10) NOT NULL,
-    create_date TIMESTAMP NOT NULL
+    create_date TIMESTAMP NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );

@@ -4,6 +4,7 @@ import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -57,9 +58,9 @@ public class RestErrorHandler {
                 .body(new ErrorDto(httpStatus));
     }
 
-    @ExceptionHandler(jakarta.validation.ValidationException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorDto> validationException(jakarta.validation.ValidationException e) {
+    public ResponseEntity<ErrorDto> methodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
 
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;

@@ -46,13 +46,16 @@ public class PersonTestBuilder {
             2024, 2, 2, 2, 2, 2, 222);
 
     @Builder.Default
+    private boolean deleted = false;
+
+    @Builder.Default
     private House residentHouse = HouseTestBuilder.builder().build().buildHouse();
 
     @Builder.Default
     private List<House> ownerHouses = List.of(HouseTestBuilder.builder().build().buildHouse());
 
     public Person buildPerson() {
-        return new Person(id, uuid, name, surname, sex, passportSeries, passportNumber, createDate, updateDate,
+        return new Person(id, uuid, name, surname, sex, passportSeries, passportNumber, createDate, updateDate, deleted,
                 residentHouse, ownerHouses);
     }
 

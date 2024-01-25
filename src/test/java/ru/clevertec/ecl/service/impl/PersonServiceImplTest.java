@@ -61,7 +61,7 @@ class PersonServiceImplTest {
         PersonResponse expected = PersonTestBuilder.builder().build().buildPersonResponse();
 
         when(personMapper.toPerson(personRequest)).thenReturn(person);
-        when(houseRepository.findByUuid(any())).thenReturn(Optional.ofNullable(person.getTenantHouse()));
+        when(houseRepository.findByUuidAndDeletedFalse(any())).thenReturn(Optional.ofNullable(person.getTenantHouse()));
         when(personRepository.save(person)).thenReturn(person);
         when(personMapper.toPersonResponse(person)).thenReturn(personResponse);
 
@@ -86,7 +86,7 @@ class PersonServiceImplTest {
         PersonResponse personResponse = PersonTestBuilder.builder().build().buildPersonResponse();
         Page<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponsePage();
 
-        when(personRepository.findAll(pageable)).thenReturn(persons);
+        when(personRepository.findByDeletedFalse(pageable)).thenReturn(persons);
         when(personMapper.toPersonResponse(any())).thenReturn(personResponse);
 
         // when
@@ -104,7 +104,7 @@ class PersonServiceImplTest {
         UUID uuid = person.getUuid();
         PersonResponse expected = PersonTestBuilder.builder().build().buildPersonResponse();
 
-        when(personRepository.findByUuid(uuid)).thenReturn(Optional.of(person));
+        when(personRepository.findByUuidAndDeletedFalse(uuid)).thenReturn(Optional.of(person));
         when(personMapper.toPersonResponse(person)).thenReturn(expected);
 
         // when
@@ -153,10 +153,10 @@ class PersonServiceImplTest {
                 .withPassportSeries("MC")
                 .build().buildPerson();
 
-        when(personRepository.findByUuid(person.getUuid())).thenReturn(Optional.of(person));
+        when(personRepository.findByUuidAndDeletedFalse(person.getUuid())).thenReturn(Optional.of(person));
         when(personMapper.mergeWithNulls(person, personRequest)).thenReturn(mergedPerson);
         when(personRepository.save(mergedPerson)).thenReturn(mergedPerson);
-        when(houseRepository.findByUuid(any())).thenReturn(Optional.of(house));
+        when(houseRepository.findByUuidAndDeletedFalse(any())).thenReturn(Optional.of(house));
 
         // when
         personService.update(personRequest);
@@ -203,9 +203,9 @@ class PersonServiceImplTest {
                 .build().buildPersonResponse();
         House house = HouseTestBuilder.builder().build().buildHouse();
 
-        when(personRepository.findByUuid(person.getUuid())).thenReturn(Optional.of(person));
+        when(personRepository.findByUuidAndDeletedFalse(person.getUuid())).thenReturn(Optional.of(person));
         when(personMapper.merge(person, personRequest)).thenReturn(mergedPerson);
-        when(houseRepository.findByUuid(any())).thenReturn(Optional.ofNullable(house));
+        when(houseRepository.findByUuidAndDeletedFalse(any())).thenReturn(Optional.ofNullable(house));
         when(personRepository.save(mergedPerson)).thenReturn(mergedPerson);
         when(personMapper.toPersonResponse(mergedPerson)).thenReturn(personResponse);
 
@@ -228,13 +228,26 @@ class PersonServiceImplTest {
     @Test
     void deleteByIdShouldThrowNotFoundException() {
         // given
-        UUID uuid = UUID.fromString("0116a46b-d57b-4bbc-a697-d4a7ace791f5");
+        Person person = PersonTestBuilder.builder().build().buildPerson();
+        UUID uuid = person.getUuid();
+        Person personForDelete = PersonTestBuilder.builder()
+                .withDeleted(false)
+                .build().buildPerson();
+        boolean expected = true;
+
+        when(personRepository.findByUuidAndDeletedFalse(uuid)).thenReturn(Optional.of(person));
+        when(personRepository.save(any())).thenReturn(personForDelete);
 
         // when
         personService.deleteById(uuid);
 
         // then
-        verify(personRepository).deleteByUuid(uuid);
+        verify(personRepository)
+                .save(personCaptor.capture());
+        Person actual = personCaptor.getValue();
+
+        assertThat(actual)
+                .hasFieldOrPropertyWithValue(Person.Fields.deleted, expected);
     }
 
 
@@ -247,7 +260,7 @@ class PersonServiceImplTest {
         PersonResponse personResponse = PersonTestBuilder.builder().build().buildPersonResponse();
         Page<PersonResponse> expected = PersonTestBuilder.builder().build().buildPersonResponsePage();
 
-        when(personRepository.findByOwnerHouses_Uuid(uuid, pageable)).thenReturn(persons);
+        when(personRepository.findByOwnerHouses_UuidAndDeletedFalseAndOwnerHouses_DeletedFalse(uuid, pageable)).thenReturn(persons);
         when(personMapper.toPersonResponse(any())).thenReturn(personResponse);
 
         // when

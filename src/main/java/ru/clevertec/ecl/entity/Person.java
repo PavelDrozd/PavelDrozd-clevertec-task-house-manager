@@ -83,6 +83,11 @@ public class Person {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},
             fetch = FetchType.LAZY)
     @JoinColumn(name = "house_id",

@@ -44,7 +44,7 @@ public class PersonRepositoryIntegrationTest {
         int expected = 3;
 
         // when
-        Page<Person> persons = personRepository.findAll(pageable);
+        Page<Person> persons = personRepository.findByDeletedFalse(pageable);
         int actual = persons.getSize();
 
         // then
@@ -59,7 +59,7 @@ public class PersonRepositoryIntegrationTest {
         Person expected = PersonTestBuilder.builder().build().buildPerson();
 
         // when
-        Person actual = personRepository.findByUuid(uuid).orElseThrow();
+        Person actual = personRepository.findByUuidAndDeletedFalse(uuid).orElseThrow();
 
         // then
         assertThat(actual)
@@ -87,7 +87,7 @@ public class PersonRepositoryIntegrationTest {
                 .build().buildPerson();
 
         // when
-        Person actual = personRepository.findByOwnerHouses_Uuid(uuid, pageable)
+        Person actual = personRepository.findByOwnerHouses_UuidAndDeletedFalseAndOwnerHouses_DeletedFalse(uuid, pageable)
                 .getContent()
                 .get(0);
 

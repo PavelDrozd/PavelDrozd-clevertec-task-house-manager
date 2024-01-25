@@ -79,7 +79,7 @@ class HouseServiceImplTest {
         HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
         Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
 
-        when(houseRepository.findAll(Pageable.unpaged())).thenReturn(houses);
+        when(houseRepository.findByDeletedFalse(Pageable.unpaged())).thenReturn(houses);
         when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
 
         // when
@@ -97,7 +97,7 @@ class HouseServiceImplTest {
         UUID uuid = house.getUuid();
         HouseResponse expected = HouseTestBuilder.builder().build().buildHouseResponse();
 
-        when(houseRepository.findByUuid(uuid)).thenReturn(Optional.of(house));
+        when(houseRepository.findByUuidAndDeletedFalse(uuid)).thenReturn(Optional.of(house));
         when(houseMapper.toHouseResponse(house)).thenReturn(expected);
 
         // when
@@ -142,7 +142,7 @@ class HouseServiceImplTest {
                 .withNumber("25")
                 .build().buildHouse();
 
-        when(houseRepository.findByUuid(house.getUuid())).thenReturn(Optional.of(house));
+        when(houseRepository.findByUuidAndDeletedFalse(house.getUuid())).thenReturn(Optional.of(house));
         when(houseMapper.mergeWithNulls(house, houseRequest)).thenReturn(mergedHouse);
         when(houseRepository.save(mergedHouse)).thenReturn(mergedHouse);
 
@@ -189,7 +189,7 @@ class HouseServiceImplTest {
                 .build().buildHouseResponse();
 
 
-        when(houseRepository.findByUuid(house.getUuid())).thenReturn(Optional.of(house));
+        when(houseRepository.findByUuidAndDeletedFalse(house.getUuid())).thenReturn(Optional.of(house));
         when(houseMapper.merge(house, houseRequest)).thenReturn(mergedHouse);
         when(houseRepository.save(mergedHouse)).thenReturn(mergedHouse);
         when(houseMapper.toHouseResponse(mergedHouse)).thenReturn(houseResponse);
@@ -212,13 +212,26 @@ class HouseServiceImplTest {
     @Test
     void deleteByIdShouldThrowNotFoundException() {
         // given
-        UUID uuid = UUID.fromString("0116a46b-d57b-4bbc-a697-d4a7ace791f5");
+        House house = HouseTestBuilder.builder().build().buildHouse();
+        UUID uuid = house.getUuid();
+        House houseForDelete = HouseTestBuilder.builder()
+                .withDeleted(false)
+                .build().buildHouse();
+        boolean expected = true;
+
+        when(houseRepository.findByUuidAndDeletedFalse(uuid)).thenReturn(Optional.of(house));
+        when(houseRepository.save(any())).thenReturn(houseForDelete);
 
         // when
         houseService.deleteById(uuid);
 
         // then
-        verify(houseRepository).deleteByUuid(uuid);
+        verify(houseRepository)
+                .save(houseCaptor.capture());
+        House actual = houseCaptor.getValue();
+
+        assertThat(actual)
+                .hasFieldOrPropertyWithValue(House.Fields.deleted, expected);
     }
 
     @Test
@@ -230,7 +243,7 @@ class HouseServiceImplTest {
         HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
         Page<HouseResponse> expected = HouseTestBuilder.builder().build().buildHouseResponsePage();
 
-        when(houseRepository.findByTenants_Uuid(uuid, pageable)).thenReturn(houses);
+        when(houseRepository.findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalse(uuid, pageable)).thenReturn(houses);
         when(houseMapper.toHouseResponse(any())).thenReturn(houseResponse);
 
         // when

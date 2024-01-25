@@ -12,18 +12,21 @@ import java.util.UUID;
 
 public interface PersonRepository extends JpaRepository<Person, Long> {
 
-    Optional<Person> findByUuid(UUID uuid);
+    Page<Person> findByDeletedFalse(Pageable pageable);
 
-    void deleteByUuid(UUID uuid);
+    Optional<Person> findByUuidAndDeletedFalse(UUID uuid);
 
-    Page<Person> findByOwnerHouses_Uuid(UUID uuid, Pageable pageable);
+    Page<Person> findByOwnerHouses_UuidAndDeletedFalseAndOwnerHouses_DeletedFalse(UUID uuid, Pageable pageable);
 
-    @Query("SELECT p " +
-           "FROM Person p " +
-           "WHERE p.name LIKE %:name% " +
-           "OR p.surname LIKE %:name% " +
-           "OR p.passportSeries LIKE %:name% " +
-           "OR p.passportNumber LIKE %:name%")
+    @Query("""
+            SELECT p
+            FROM Person p
+            WHERE p.name LIKE %:name%
+            OR p.surname LIKE %:name%
+            OR p.passportSeries LIKE %:name%
+            OR p.passportNumber LIKE %:name%
+            AND p.deleted = false
+            """)
     Page<Person> findByNameMatches(String name, Pageable pageable);
 
     @Query("""
@@ -33,6 +36,4 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             AND hh.type = :type
             """)
     Page<Person> findPersonsByHouseUuidAndType(UUID uuid, Type type, Pageable pageable);
-
-
 }

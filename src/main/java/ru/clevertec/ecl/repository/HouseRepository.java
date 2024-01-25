@@ -11,12 +11,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface HouseRepository extends JpaRepository<House, Long> {
+    Page<House> findByDeletedFalse(Pageable pageable);
 
-    Optional<House> findByUuid(UUID uuid);
+    Optional<House> findByUuidAndDeletedFalse(UUID uuid);
 
-    void deleteByUuid(UUID uuid);
-
-    Page<House> findByTenants_Uuid(UUID uuid, Pageable pageable);
+    Page<House> findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalse(UUID uuid, Pageable pageable);
 
     @Query("""
             SELECT h
@@ -25,6 +24,7 @@ public interface HouseRepository extends JpaRepository<House, Long> {
             OR h.country LIKE %:name%
             OR h.city LIKE %:name%
             OR h.street LIKE %:name%
+            AND h.deleted = false
                     """)
     Page<House> findByNameMatches(String name, Pageable pageable);
 

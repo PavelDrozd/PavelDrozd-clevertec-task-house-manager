@@ -39,8 +39,11 @@ public class HouseTestBuilder {
     private LocalDateTime createDate = LocalDateTime.of(
             2024, 1, 3, 9, 12, 15, 156);
 
+    @Builder.Default
+    private boolean deleted = false;
+
     public House buildHouse() {
-        return new House(id, uuid, country, area, city, street, number, createDate, null);
+        return new House(id, uuid, country, area, city, street, number, createDate, deleted, null);
     }
 
     public HouseRequest buildHouseRequest() {

@@ -44,7 +44,7 @@ public class HouseRepositoryIntegrationTest {
         int expected = 3;
 
         // when
-        Page<House> houses = houseRepository.findAll(pageable);
+        Page<House> houses = houseRepository.findByDeletedFalse(pageable);
         int actual = houses.getSize();
 
         // then
@@ -59,7 +59,7 @@ public class HouseRepositoryIntegrationTest {
         House expected = HouseTestBuilder.builder().build().buildHouse();
 
         // when
-        House actual = houseRepository.findByUuid(uuid).orElseThrow();
+        House actual = houseRepository.findByUuidAndDeletedFalse(uuid).orElseThrow();
 
         // then
         assertThat(actual)
@@ -86,7 +86,7 @@ public class HouseRepositoryIntegrationTest {
                 .build().buildHouse();
 
         // when
-        House actual = houseRepository.findByTenants_Uuid(uuid, pageable)
+        House actual = houseRepository.findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalse(uuid, pageable)
                 .getContent()
                 .get(0);
 

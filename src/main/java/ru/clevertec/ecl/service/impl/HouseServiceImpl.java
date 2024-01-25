@@ -68,7 +68,7 @@ public class HouseServiceImpl implements HouseService {
     public Page<HouseResponse> getAll(Pageable pageable) {
         log.debug("SERVICE: GET ALL HOUSES WITH PAGEABLE: " + pageable);
 
-        return houseRepository.findAll(pageable)
+        return houseRepository.findByDeletedFalse(pageable)
                 .map(houseMapper::toHouseResponse);
     }
 
@@ -83,7 +83,7 @@ public class HouseServiceImpl implements HouseService {
     public HouseResponse getById(UUID id) {
         log.debug("SERVICE: GET HOUSE BY UUID: " + id);
 
-        return houseRepository.findByUuid(id)
+        return houseRepository.findByUuidAndDeletedFalse(id)
                 .map(houseMapper::toHouseResponse)
                 .orElseThrow(() -> NotFoundException.of(House.class, id));
     }
@@ -101,7 +101,7 @@ public class HouseServiceImpl implements HouseService {
         log.debug("SERVICE: UPDATE HOUSE: " + houseRequest);
 
         UUID id = houseRequest.uuid();
-        House exist = houseRepository.findByUuid(id)
+        House exist = houseRepository.findByUuidAndDeletedFalse(id)
                 .orElseThrow(() -> NotFoundException.of(House.class, id));
 
         if (isChanged(exist, houseRequest)) {
@@ -127,7 +127,7 @@ public class HouseServiceImpl implements HouseService {
         log.debug("SERVICE: UPDATE PART HOUSE: " + houseRequest);
 
         UUID id = houseRequest.uuid();
-        House exist = houseRepository.findByUuid(id)
+        House exist = houseRepository.findByUuidAndDeletedFalse(id)
                 .orElseThrow(() -> NotFoundException.of(House.class, id));
 
         if (isChanged(exist, houseRequest)) {
@@ -147,10 +147,14 @@ public class HouseServiceImpl implements HouseService {
      */
     @Delete
     @Override
+    @Transactional
     public void deleteById(UUID id) {
         log.debug("SERVICE: DELETE HOUSE BY UUID: " + id);
 
-        houseRepository.deleteByUuid(id);
+        House houseForDelete = houseRepository.findByUuidAndDeletedFalse(id)
+                .orElseThrow(() -> NotFoundException.of(House.class, id));
+        houseForDelete.setDeleted(true);
+        houseRepository.save(houseForDelete);
     }
 
     /**
@@ -164,7 +168,7 @@ public class HouseServiceImpl implements HouseService {
     public Page<HouseResponse> getHousesByPersonUuid(UUID id, Pageable pageable) {
         log.debug("SERVICE: FIND HOUSES BY PERSON UUID: " + id + " WITH PAGEABLE: " + pageable);
 
-        return houseRepository.findByTenants_Uuid(id, pageable)
+        return houseRepository.findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalse(id, pageable)
                 .map(houseMapper::toHouseResponse);
     }
 

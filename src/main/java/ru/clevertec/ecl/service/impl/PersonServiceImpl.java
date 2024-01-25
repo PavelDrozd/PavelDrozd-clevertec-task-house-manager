@@ -61,7 +61,7 @@ public class PersonServiceImpl implements PersonService {
         log.debug("SERVICE: CREATE PERSON: " + personRequest);
 
         UUID houseId = personRequest.tenantHouseUuidRequest();
-        House house = houseRepository.findByUuid(houseId)
+        House house = houseRepository.findByUuidAndDeletedFalse(houseId)
                 .orElseThrow(() -> NotFoundException.of(House.class, houseId));
 
         Person person = personMapper.toPerson(personRequest);
@@ -81,7 +81,7 @@ public class PersonServiceImpl implements PersonService {
     public Page<PersonResponse> getAll(Pageable pageable) {
         log.debug("SERVICE: FIND ALL PERSONS WITH PAGEABLE: " + pageable);
 
-        return personRepository.findAll(pageable)
+        return personRepository.findByDeletedFalse(pageable)
                 .map(personMapper::toPersonResponse);
     }
 
@@ -96,7 +96,7 @@ public class PersonServiceImpl implements PersonService {
     public PersonResponse getById(UUID id) {
         log.debug("SERVICE: GET PERSON BY UUID: " + id);
 
-        return personRepository.findByUuid(id)
+        return personRepository.findByUuidAndDeletedFalse(id)
                 .map(personMapper::toPersonResponse)
                 .orElseThrow(() -> NotFoundException.of(Person.class, id));
     }
@@ -114,7 +114,7 @@ public class PersonServiceImpl implements PersonService {
         log.debug("SERVICE: UPDATE PERSON: " + personRequest);
 
         UUID id = personRequest.uuid();
-        Person exist = personRepository.findByUuid(id)
+        Person exist = personRepository.findByUuidAndDeletedFalse(id)
                 .orElseThrow(() -> NotFoundException.of(Person.class, id));
 
         if (isChanged(exist, personRequest)) {
@@ -141,7 +141,7 @@ public class PersonServiceImpl implements PersonService {
         log.debug("SERVICE: UPDATE PERSON: " + personRequest);
 
         UUID id = personRequest.uuid();
-        Person exist = personRepository.findByUuid(id)
+        Person exist = personRepository.findByUuidAndDeletedFalse(id)
                 .orElseThrow(() -> NotFoundException.of(Person.class, id));
 
         if (isChanged(exist, personRequest)) {
@@ -161,10 +161,13 @@ public class PersonServiceImpl implements PersonService {
      */
     @Delete
     @Override
+    @Transactional
     public void deleteById(UUID id) {
         log.debug("SERVICE: DELETE PERSON BY UUID: " + id);
-
-        personRepository.deleteByUuid(id);
+        Person personForDelete = personRepository.findByUuidAndDeletedFalse(id)
+                .orElseThrow(() -> NotFoundException.of(Person.class, id));
+        personForDelete.setDeleted(true);
+        personRepository.save(personForDelete);
     }
 
     /**
@@ -178,7 +181,7 @@ public class PersonServiceImpl implements PersonService {
     public Page<PersonResponse> getPersonsByHouseUuid(UUID id, Pageable pageable) {
         log.debug("SERVICE: GET PERSONS BY HOUSE UUID: " + id + " WITH PAGEABLE: " + pageable);
 
-        return personRepository.findByOwnerHouses_Uuid(id, pageable)
+        return personRepository.findByOwnerHouses_UuidAndDeletedFalseAndOwnerHouses_DeletedFalse(id, pageable)
                 .map(personMapper::toPersonResponse);
     }
 
@@ -267,7 +270,7 @@ public class PersonServiceImpl implements PersonService {
     private House getTenantHouseByPersonRequest(PersonRequest personRequest) {
         UUID tenantHouseUuid = personRequest.tenantHouseUuidRequest();
 
-        return houseRepository.findByUuid(tenantHouseUuid)
+        return houseRepository.findByUuidAndDeletedFalse(tenantHouseUuid)
                 .orElseThrow(() -> NotFoundException.of(House.class, tenantHouseUuid));
     }
 
@@ -275,7 +278,7 @@ public class PersonServiceImpl implements PersonService {
         List<UUID> ownerHousesRequest = personRequest.ownerHousesUuidRequest();
 
         return ownerHousesRequest.stream()
-                .map(houseRepository::findByUuid)
+                .map(houseRepository::findByUuidAndDeletedFalse)
                 .map(Optional::orElseThrow)
                 .toList();
     }
