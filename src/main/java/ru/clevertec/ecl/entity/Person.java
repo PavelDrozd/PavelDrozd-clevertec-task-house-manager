@@ -2,7 +2,6 @@ package ru.clevertec.ecl.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -22,7 +21,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
-import ru.clevertec.ecl.entity.converter.PersonSexConverter;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import ru.clevertec.ecl.entity.listener.PersonListener;
 import ru.clevertec.ecl.enums.Sex;
 
@@ -60,8 +60,8 @@ public class Person {
             nullable = false)
     private String surname;
 
-    @Convert(converter = PersonSexConverter.class)
-    @Column(name = "sex_id",
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "sex",
             nullable = false)
     private Sex sex;
 

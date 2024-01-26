@@ -1,0 +1,1 @@
+CREATE TYPE person_type AS ENUM ('TENANT', 'OWNER');

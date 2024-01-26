@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS  persons (
     "uuid" UUID UNIQUE NOT NULL,
     "name" VARCHAR(30) NOT NULL,
     surname VARCHAR(30) NOT NULL,
-    sex_id INT4 NOT NULL REFERENCES sex,
+    sex sex_type NOT NULL,
     passport_series varchar(4) NOT NULL,
     passport_number varchar(8) NOT NULL,
     create_date TIMESTAMP NOT NULL,
