@@ -1,14 +1,9 @@
 package ru.clevertec.ecl.integration.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
-import ru.clevertec.ecl.config.DBContainerConfig;
+import ru.clevertec.ecl.PostgresContainerInitializer;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.data.request.PersonRequest;
 import ru.clevertec.ecl.data.response.PersonResponse;
@@ -27,9 +22,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Testcontainers
 @SpringBootTest
-public class PersonServiceImplIntegrationTest {
+@RequiredArgsConstructor
+public class PersonServiceImplIntegrationTest extends PostgresContainerInitializer {
 
     private static final int THREAD_POOL = 6;
 
@@ -38,13 +33,7 @@ public class PersonServiceImplIntegrationTest {
     private final DelayGenerator delayGenerator = DelayGenerator.getRandomDelayGenerator(
             500, 2000, TimeUnit.MILLISECONDS);
 
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            DockerImageName.parse(DBContainerConfig.POSTGRES_CONTAINER_VERSION));
-
-    @Autowired
-    PersonService personService;
+    private final PersonService personService;
 
     @Test
     void shouldAssertAllHouseResponses() throws Exception {

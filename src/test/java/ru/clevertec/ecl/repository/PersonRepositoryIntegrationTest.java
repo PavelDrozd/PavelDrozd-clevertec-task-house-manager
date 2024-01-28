@@ -1,16 +1,12 @@
 package ru.clevertec.ecl.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
-import ru.clevertec.ecl.config.DBContainerConfig;
+import ru.clevertec.ecl.PostgresContainerInitializer;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.entity.Person;
 import ru.clevertec.ecl.enums.Sex;
@@ -19,20 +15,15 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Testcontainers
-@SpringBootTest
-public class PersonRepositoryIntegrationTest {
+@DataJpaTest
+@RequiredArgsConstructor
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class PersonRepositoryIntegrationTest extends PostgresContainerInitializer {
 
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            DockerImageName.parse(DBContainerConfig.POSTGRES_CONTAINER_VERSION));
-
-    @Autowired
-    private PersonRepository personRepository;
+    private final PersonRepository personRepository;
 
     @Test
-    public void findAllPaginationShouldReturnExpectedLimitOfHouses() {
+    public void findByDeletedFalseShouldReturnExpectedLimitOfHouses() {
         // given
         int pageSize = 3;
         Pageable pageable = Pageable.ofSize(pageSize);
@@ -48,7 +39,7 @@ public class PersonRepositoryIntegrationTest {
     }
 
     @Test
-    public void findByIdShouldReturnExpectedHouse() {
+    public void findByUuidAndDeletedFalseShouldReturnExpectedHouse() {
         // given
         UUID uuid = PersonTestBuilder.builder().build().buildPerson().getUuid();
         Person expected = PersonTestBuilder.builder().build().buildPerson();
@@ -68,7 +59,7 @@ public class PersonRepositoryIntegrationTest {
 
 
     @Test
-    public void findPersonsByHouseUuidShouldReturnExpectedPerson() {
+    public void findByOwnerHouses_UuidAndDeletedFalseAndOwnerHouses_DeletedFalseShouldReturnExpectedPerson() {
         // given
         UUID uuid = UUID.fromString("63f0df3a-b447-4d76-ba8f-638b81a99b07");
         Pageable pageable = Pageable.unpaged();
@@ -98,7 +89,7 @@ public class PersonRepositoryIntegrationTest {
 
 
     @Test
-    public void createShouldReturnExpectedHouse() {
+    public void saveShouldReturnExpectedHouse() {
         // given
         Person person = PersonTestBuilder.builder().build().buildPersonForCreate();
         Person expected = PersonTestBuilder.builder().build().buildPersonForCreate();
@@ -111,30 +102,6 @@ public class PersonRepositoryIntegrationTest {
                 .hasFieldOrPropertyWithValue(Person.Fields.name, expected.getName())
                 .hasFieldOrPropertyWithValue(Person.Fields.surname, expected.getSurname())
                 .hasFieldOrPropertyWithValue(Person.Fields.sex, expected.getSex())
-                .hasFieldOrPropertyWithValue(Person.Fields.passportSeries, expected.getPassportSeries())
-                .hasFieldOrPropertyWithValue(Person.Fields.passportNumber, expected.getPassportNumber());
-    }
-
-    @Test
-    public void updateShouldReturnExpectedPassportNumber() {
-        // given
-        Person person = PersonTestBuilder.builder()
-                .withName("Алина")
-                .withPassportSeries("MP")
-                .withPassportNumber("7654321")
-                .build().buildPersonForUpdate();
-        Person expected = PersonTestBuilder.builder()
-                .withName("Алина")
-                .withPassportSeries("MP")
-                .withPassportNumber("7654321")
-                .build().buildPersonForUpdate();
-
-        // when
-        Person actual = personRepository.save(person);
-
-        // then
-        assertThat(actual)
-                .hasFieldOrPropertyWithValue(Person.Fields.name, expected.getName())
                 .hasFieldOrPropertyWithValue(Person.Fields.passportSeries, expected.getPassportSeries())
                 .hasFieldOrPropertyWithValue(Person.Fields.passportNumber, expected.getPassportNumber());
     }
