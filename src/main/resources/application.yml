@@ -21,6 +21,9 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+  liquibase:
+    change-log: db/changelog/db.changelog-master.yml
+    enabled: true
 cache:
   type: LRU
   size: 10
