@@ -3,6 +3,7 @@ package ru.clevertec.ecl.data;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.data.request.PersonRequest;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
@@ -59,6 +60,30 @@ public class PersonTestBuilder {
                 residentHouse, ownerHouses);
     }
 
+    public Person buildPersonFirst() {
+        return Person.builder()
+                .uuid(UUID.fromString("03736b7f-3ca4-4af7-99ac-07628a7d8fe6"))
+                .name("София")
+                .surname("Макарова")
+                .sex(Sex.FEMALE)
+                .passportSeries("MC")
+                .passportNumber("6373235")
+                .tenantHouse(HouseTestBuilder.builder().build().buildHouseFirst())
+                .build();
+    }
+
+    public Person buildPersonSecond() {
+        return Person.builder()
+                .uuid(UUID.fromString("12ff37bc-3fc8-47cd-8b18-d0b3fb35597b"))
+                .name("Герман")
+                .surname("Куликов")
+                .sex(Sex.MALE)
+                .passportSeries("MA")
+                .passportNumber("2634736")
+                .tenantHouse(HouseTestBuilder.builder().build().buildHouseSecond())
+                .build();
+    }
+
     public PersonRequest buildPersonRequest() {
         return new PersonRequest(uuid, name, surname, sex, passportSeries, passportNumber,
                 HouseTestBuilder.builder().build().buildHouseRequest().uuid(),
@@ -71,12 +96,38 @@ public class PersonTestBuilder {
                 List.of(HouseTestBuilder.builder().build().buildHouseResponse()));
     }
 
+    public PersonResponse buildPersonResponseFirst() {
+        return new PersonResponse(UUID.fromString("03736b7f-3ca4-4af7-99ac-07628a7d8fe6"),
+                "София",
+                "Макарова",
+                Sex.MALE,
+                "MC",
+                "6373235",
+                null,
+                null,
+                HouseTestBuilder.builder().build().buildHouseResponseFirst(),
+                null);
+    }
+
+    public PersonResponse buildPersonResponseSecond() {
+        return new PersonResponse(UUID.fromString("12ff37bc-3fc8-47cd-8b18-d0b3fb35597b"),
+                "Герман",
+                "Куликов",
+                Sex.MALE,
+                "MA",
+                "2634736",
+                null,
+                null,
+                HouseTestBuilder.builder().build().buildHouseResponseSecond(),
+                null);
+    }
+
     public List<Person> buildPersonList() {
         return List.of(buildPerson());
     }
 
     public Page<Person> buildPersonPage() {
-        return new PageImpl<>(buildPersonList());
+        return new PageImpl<>(buildPersonList(), Pageable.ofSize(1), 1);
     }
 
     public List<PersonRequest> buildPersonRequestList() {
@@ -88,7 +139,7 @@ public class PersonTestBuilder {
     }
 
     public Page<PersonResponse> buildPersonResponsePage() {
-        return new PageImpl<>(buildPersonResponseList());
+        return new PageImpl<>(buildPersonResponseList(), Pageable.ofSize(1), 1);
     }
 
     public Person buildPersonForCreate() {
@@ -175,6 +226,22 @@ public class PersonTestBuilder {
                 .build().buildPersonRequest();
     }
 
+    public PersonRequest buildPersonRequestForUpdatePart() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("fd839347-a17c-44f0-a8b7-77b53d8a652d"))
+                .withName("Полина")
+                .withSurname("Леонова")
+                .withSex(null)
+                .withPassportSeries("MC")
+                .withPassportNumber("2223333")
+                .withCreateDate(null)
+                .withUpdateDate(null)
+                .withResidentHouse(null)
+                .withOwnerHouses(null)
+                .build().buildPersonRequest();
+    }
+
     public PersonRequest buildPersonRequestForDelete() {
         return PersonTestBuilder.builder()
                 .withId(null)
@@ -194,7 +261,7 @@ public class PersonTestBuilder {
     public PersonResponse buildPersonResponseForCreate() {
         return PersonTestBuilder.builder()
                 .withId(null)
-                .withUuid(null)
+                .withUuid(UUID.fromString("d853f4c2-3889-4271-8053-57fec8c82958"))
                 .withName("Евгений")
                 .withSurname("Борисов")
                 .withSex(Sex.MALE)
@@ -208,6 +275,24 @@ public class PersonTestBuilder {
     }
 
     public PersonResponse buildPersonResponseForUpdate() {
+        return PersonTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("fd839347-a17c-44f0-a8b7-77b53d8a652d"))
+                .withName("Полина")
+                .withSurname("Леонова")
+                .withSex(Sex.FEMALE)
+                .withPassportSeries("MC")
+                .withPassportNumber("2223333")
+                .withCreateDate(LocalDateTime.of(
+                        2023, 12, 28, 7, 12, 15, 156))
+                .withUpdateDate(LocalDateTime.of(
+                        2023, 12, 28, 7, 12, 15, 156))
+                .withResidentHouse(residentHouse)
+                .withOwnerHouses(List.of(residentHouse))
+                .build().buildPersonResponse();
+    }
+
+    public PersonResponse buildPersonResponseForUpdatePart() {
         return PersonTestBuilder.builder()
                 .withId(null)
                 .withUuid(UUID.fromString("fd839347-a17c-44f0-a8b7-77b53d8a652d"))

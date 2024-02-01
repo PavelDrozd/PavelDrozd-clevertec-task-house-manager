@@ -9,11 +9,11 @@ public interface AbstractService<K, V, R> {
 
     Page<R> getAll(Pageable pageable);
 
-    R getById(K id);
+    R getByUuid(K uuid);
 
     R update(V v);
 
     R updatePart(V v);
 
-    void deleteById(K id);
+    void deleteByUuid(K uuid);
 }

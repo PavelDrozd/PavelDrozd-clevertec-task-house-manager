@@ -10,7 +10,6 @@ spring:
         default-page-size: 15
         max-page-size: 50
   datasource:
-    driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/house-manager
     username: postgres
     password: root
@@ -21,6 +20,9 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+  liquibase:
+    change-log: db/changelog/db.changelog-master.yml
+    enabled: true
 cache:
   type: LRU
   size: 10

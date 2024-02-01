@@ -101,7 +101,7 @@ class HouseServiceImplTest {
         when(houseMapper.toHouseResponse(house)).thenReturn(expected);
 
         // when
-        HouseResponse actual = houseService.getById(uuid);
+        HouseResponse actual = houseService.getByUuid(uuid);
 
         // then
         assertThat(actual)
@@ -120,7 +120,7 @@ class HouseServiceImplTest {
         String expected = "not found";
 
         // when
-        Exception exception = assertThrows(NotFoundException.class, () -> houseService.getById(fakeUuid));
+        Exception exception = assertThrows(NotFoundException.class, () -> houseService.getByUuid(fakeUuid));
         String actual = exception.getMessage();
 
         // then
@@ -223,7 +223,7 @@ class HouseServiceImplTest {
         when(houseRepository.save(any())).thenReturn(houseForDelete);
 
         // when
-        houseService.deleteById(uuid);
+        houseService.deleteByUuid(uuid);
 
         // then
         verify(houseRepository)

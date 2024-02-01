@@ -108,7 +108,7 @@ class PersonServiceImplTest {
         when(personMapper.toPersonResponse(person)).thenReturn(expected);
 
         // when
-        PersonResponse actual = personService.getById(uuid);
+        PersonResponse actual = personService.getByUuid(uuid);
 
         // then
         assertThat(actual)
@@ -127,7 +127,7 @@ class PersonServiceImplTest {
         String expected = "not found";
 
         // when
-        Exception exception = assertThrows(NotFoundException.class, () -> personService.getById(fakeUuid));
+        Exception exception = assertThrows(NotFoundException.class, () -> personService.getByUuid(fakeUuid));
         String actual = exception.getMessage();
 
         // then
@@ -239,7 +239,7 @@ class PersonServiceImplTest {
         when(personRepository.save(any())).thenReturn(personForDelete);
 
         // when
-        personService.deleteById(uuid);
+        personService.deleteByUuid(uuid);
 
         // then
         verify(personRepository)

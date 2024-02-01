@@ -1,3 +1,6 @@
+--liquibase formatted sql
+
+--changeset pdrozd:create-persons-table
 CREATE TABLE IF NOT EXISTS  persons (
     "id" BIGSERIAL PRIMARY KEY,
     "uuid" UUID UNIQUE NOT NULL,
@@ -13,3 +16,5 @@ CREATE TABLE IF NOT EXISTS  persons (
 );
 
 ALTER TABLE persons ADD CONSTRAINT unique_passport_series_number UNIQUE (passport_series, passport_number);
+--rollback drop table houses;
+--rollback alter table persons drop constraint unique_passport_series_number;

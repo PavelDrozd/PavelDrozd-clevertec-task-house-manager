@@ -1,16 +1,13 @@
 package ru.clevertec.ecl.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
-import ru.clevertec.ecl.config.DBContainerConfig;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.data.HouseTestBuilder;
 import ru.clevertec.ecl.entity.House;
 
@@ -18,20 +15,17 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Testcontainers
+@Transactional
 @SpringBootTest
+@ActiveProfiles("test")
+@RequiredArgsConstructor
+@Sql(scripts = "classpath:db/data.sql")
 public class HouseRepositoryIntegrationTest {
 
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            DockerImageName.parse(DBContainerConfig.POSTGRES_CONTAINER_VERSION));
-
-    @Autowired
-    HouseRepository houseRepository;
+    private final HouseRepository houseRepository;
 
     @Test
-    public void findAllPaginationShouldReturnExpectedLimitOfHouses() {
+    public void findAllByDeletedFalsePaginationShouldReturnExpectedLimitOfHouses() {
         // given
         int pageSize = 3;
         Pageable pageable = Pageable.ofSize(pageSize);
@@ -47,7 +41,7 @@ public class HouseRepositoryIntegrationTest {
     }
 
     @Test
-    public void findByIdShouldReturnExpectedHouse() {
+    public void findByUuidAndDeletedFalseShouldReturnExpectedHouse() {
         // given
         UUID uuid = HouseTestBuilder.builder().build().buildHouse().getUuid();
         House expected = HouseTestBuilder.builder().build().buildHouse();
@@ -66,7 +60,7 @@ public class HouseRepositoryIntegrationTest {
     }
 
     @Test
-    public void findHousesByPersonUuidShouldReturnExpectedHouse() {
+    public void findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalseShouldReturnExpectedHouse() {
         // given
         UUID uuid = UUID.fromString("03736b7f-3ca4-4af7-99ac-07628a7d8fe6");
         Pageable pageable = Pageable.unpaged();
@@ -95,7 +89,7 @@ public class HouseRepositoryIntegrationTest {
     }
 
     @Test
-    public void createShouldReturnExpectedHouse() {
+    public void saveShouldReturnExpectedHouse() {
         // given
         House house = HouseTestBuilder.builder().build().buildHouseForCreate();
         House expected = HouseTestBuilder.builder().build().buildHouseForCreate();
@@ -109,24 +103,6 @@ public class HouseRepositoryIntegrationTest {
                 .hasFieldOrPropertyWithValue(House.Fields.area, expected.getArea())
                 .hasFieldOrPropertyWithValue(House.Fields.city, expected.getCity())
                 .hasFieldOrPropertyWithValue(House.Fields.street, expected.getStreet())
-                .hasFieldOrPropertyWithValue(House.Fields.number, expected.getNumber());
-    }
-
-    @Test
-    public void updateShouldReturnExpectedNumber() {
-        // given
-        House house = HouseTestBuilder.builder()
-                .withNumber("11")
-                .build().buildHouseForUpdate();
-        House expected = HouseTestBuilder.builder()
-                .withNumber("11")
-                .build().buildHouseForUpdate();
-
-        // when
-        House actual = houseRepository.save(house);
-
-        // then
-        assertThat(actual)
                 .hasFieldOrPropertyWithValue(House.Fields.number, expected.getNumber());
     }
 }

@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS  types (
-	id INT4 PRIMARY KEY,
-	name varchar(20) UNIQUE NOT NULL
-);

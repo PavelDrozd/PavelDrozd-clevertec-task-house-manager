@@ -89,17 +89,17 @@ public class PersonServiceImpl implements PersonService {
     /**
      * Get Person from repository by UUID and return it as PersonResponse.
      *
-     * @param id expected object type of UUID.
+     * @param uuid expected object type of UUID.
      * @return PersonResponse object.
      */
     @Get
     @Override
-    public PersonResponse getById(UUID id) {
-        log.debug("SERVICE: GET PERSON BY UUID: " + id);
+    public PersonResponse getByUuid(UUID uuid) {
+        log.debug("SERVICE: GET PERSON BY UUID: " + uuid);
 
-        return personRepository.findByUuidAndDeletedFalse(id)
+        return personRepository.findByUuidAndDeletedFalse(uuid)
                 .map(personMapper::toPersonResponse)
-                .orElseThrow(() -> NotFoundException.of(Person.class, id));
+                .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
     }
 
     /**
@@ -114,9 +114,9 @@ public class PersonServiceImpl implements PersonService {
     public PersonResponse update(PersonRequest personRequest) {
         log.debug("SERVICE: UPDATE PERSON: " + personRequest);
 
-        UUID id = personRequest.uuid();
-        Person exist = personRepository.findByUuidAndDeletedFalse(id)
-                .orElseThrow(() -> NotFoundException.of(Person.class, id));
+        UUID uuid = personRequest.uuid();
+        Person exist = personRepository.findByUuidAndDeletedFalse(uuid)
+                .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
 
         if (isChanged(exist, personRequest)) {
             return personMapper.toPersonResponse(exist);
@@ -141,9 +141,9 @@ public class PersonServiceImpl implements PersonService {
     public PersonResponse updatePart(PersonRequest personRequest) {
         log.debug("SERVICE: UPDATE PERSON: " + personRequest);
 
-        UUID id = personRequest.uuid();
-        Person exist = personRepository.findByUuidAndDeletedFalse(id)
-                .orElseThrow(() -> NotFoundException.of(Person.class, id));
+        UUID uuid = personRequest.uuid();
+        Person exist = personRepository.findByUuidAndDeletedFalse(uuid)
+                .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
 
         if (isChanged(exist, personRequest)) {
             return personMapper.toPersonResponse(exist);
@@ -158,15 +158,15 @@ public class PersonServiceImpl implements PersonService {
     /**
      * Delete Person entity from repository by UUID.
      *
-     * @param id expected object type of UUID.
+     * @param uuid expected object type of UUID.
      */
     @Delete
     @Override
     @Transactional
-    public void deleteById(UUID id) {
-        log.debug("SERVICE: DELETE PERSON BY UUID: " + id);
-        Person personForDelete = personRepository.findByUuidAndDeletedFalse(id)
-                .orElseThrow(() -> NotFoundException.of(Person.class, id));
+    public void deleteByUuid(UUID uuid) {
+        log.debug("SERVICE: DELETE PERSON BY UUID: " + uuid);
+        Person personForDelete = personRepository.findByUuidAndDeletedFalse(uuid)
+                .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
         personForDelete.setDeleted(true);
         personRepository.save(personForDelete);
     }
@@ -174,15 +174,15 @@ public class PersonServiceImpl implements PersonService {
     /**
      * Get residents of a house from repository by House UUID.
      *
-     * @param id       expected object type of UUID.
+     * @param uuid       expected object type of UUID.
      * @param pageable expected an object type of Pageable.
      * @return List of PersonResponse objects.
      */
     @Override
-    public Page<PersonResponse> getPersonsByHouseUuid(UUID id, Pageable pageable) {
-        log.debug("SERVICE: GET PERSONS BY HOUSE UUID: " + id + " WITH PAGEABLE: " + pageable);
+    public Page<PersonResponse> getPersonsByHouseUuid(UUID uuid, Pageable pageable) {
+        log.debug("SERVICE: GET PERSONS BY HOUSE UUID: " + uuid + " WITH PAGEABLE: " + pageable);
 
-        return personRepository.findByOwnerHouses_UuidAndDeletedFalseAndOwnerHouses_DeletedFalse(id, pageable)
+        return personRepository.findByOwnerHouses_UuidAndDeletedFalseAndOwnerHouses_DeletedFalse(uuid, pageable)
                 .map(personMapper::toPersonResponse);
     }
 

@@ -1,3 +1,6 @@
+--liquibase formatted sql
+
+--changeset pdrozd:insert-persons-table
 INSERT INTO persons ("uuid", "name", surname, sex, passport_series, passport_number, create_date, update_date, house_id)
 VALUES ('79e17dfd-a27d-45b6-8c72-a15538b8216e', 'Мария', 'Лазарева', 'FEMALE', 'MP', '7332632', '2018-08-29T06:12:15.156', '2024-01-03T09:12:15.156', (SELECT id FROM houses WHERE uuid = 'ac602dde-9556-4ef5-954c-aeebc42c5056')),
 		('03736b7f-3ca4-4af7-99ac-07628a7d8fe6', 'София', 'Макарова', 'FEMALE', 'MC', '6373235', '2022-11-11T06:12:15.156', '2022-11-11T06:12:15.156', (SELECT id FROM houses WHERE uuid = '061783b1-c63b-4fb2-a9d0-9d90842911a2')),
@@ -9,3 +12,4 @@ VALUES ('79e17dfd-a27d-45b6-8c72-a15538b8216e', 'Мария', 'Лазарева'
 		('789c8c63-a58d-4e50-a4b4-33c15debfaf3', 'Андрей', 'Румянцев', 'MALE', 'MP', '9474383', '2023-09-29T06:05:15.156', '2023-09-29T06:05:15.156', (SELECT id FROM houses WHERE uuid = 'b99d623b-4b7e-4c89-afce-2bed07ceb9fc')),
 		('ea00be28-1ce2-48e4-b4b3-c0e98c258201', 'Иван', 'Ананьев', 'MALE', 'MP', '2346376', '2022-06-29T06:11:15.156', '2022-06-29T06:11:15.156', (SELECT id FROM houses WHERE uuid = '8ca3955d-b436-471d-872f-f2ce07ac3f15')),
 		('fd839347-a17c-44f0-a8b7-77b53d8a652d', 'Полина', 'Леонова', 'FEMALE', 'MC', '1593875', '2023-12-28T07:12:15.156', '2023-12-28T07:12:15.156', (SELECT id FROM houses WHERE uuid = '8ca3955d-b436-471d-872f-f2ce07ac3f15'));
+--rollback truncate table persons;
