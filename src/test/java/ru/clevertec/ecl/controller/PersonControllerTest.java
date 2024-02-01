@@ -58,7 +58,7 @@ public class PersonControllerTest {
         UUID uuid = PersonTestBuilder.builder().build().buildPersonRequest().uuid();
         PersonResponse personResponse = PersonTestBuilder.builder().build().buildPersonResponse();
 
-        when(personService.getById(uuid))
+        when(personService.getByUuid(uuid))
                 .thenReturn(personResponse);
 
         // when, then
@@ -79,7 +79,7 @@ public class PersonControllerTest {
         // given
         UUID fakeUuid = UUID.fromString("00017dfd-a27d-45b6-8c72-a15538b8216e");
 
-        when(personService.getById(fakeUuid))
+        when(personService.getByUuid(fakeUuid))
                 .thenThrow(NotFoundException.class);
 
         // when, then
@@ -289,7 +289,7 @@ public class PersonControllerTest {
         // given
         UUID fakeUuid = UUID.fromString("00017dfd-a27d-45b6-8c72-a15538b8216e");
 
-        doThrow(NotFoundException.class).when(personService).deleteById(fakeUuid);
+        doThrow(NotFoundException.class).when(personService).deleteByUuid(fakeUuid);
 
         // when, then
         mockMvc.perform(delete("/persons/" + fakeUuid))

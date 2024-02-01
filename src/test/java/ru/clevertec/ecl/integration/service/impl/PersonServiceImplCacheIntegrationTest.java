@@ -72,32 +72,32 @@ public class PersonServiceImplCacheIntegrationTest {
 
         List<Callable<Void>> tasks = new ArrayList<>();
         tasks.add(() -> {
-            personService.getById(uuidFirst);
+            personService.getByUuid(uuidFirst);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(1000);
-            personService.getById(uuidSecond);
+            personService.getByUuid(uuidSecond);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(2000);
-            personService.getById(uuidFirst);
+            personService.getByUuid(uuidFirst);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(3000);
-            personService.getById(uuidSecond);
+            personService.getByUuid(uuidSecond);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(4000);
-            personService.getById(uuidFirst);
+            personService.getByUuid(uuidFirst);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(5000);
-            personService.getById(uuidSecond);
+            personService.getByUuid(uuidSecond);
             return null;
         });
 
@@ -166,10 +166,10 @@ public class PersonServiceImplCacheIntegrationTest {
                 .thenReturn(personForUpdate);
 
         // when
-        Future<PersonResponse> getPersonResponse = executor.submit(() -> personService.getById(uuidForGet));
+        Future<PersonResponse> getPersonResponse = executor.submit(() -> personService.getByUuid(uuidForGet));
         Future<PersonResponse> createPersonResponse = executor.submit(() -> personService.create(personRequestForCreate));
         Future<PersonResponse> updatePersonResponse = executor.submit(() -> personService.update(personRequestForUpdate));
-        executor.submit(() -> personService.deleteById(uuidForDelete));
+        executor.submit(() -> personService.deleteByUuid(uuidForDelete));
 
         PersonResponse actualGetPersonResponse = getPersonResponse.get();
         PersonResponse actualCreatePersonResponse = createPersonResponse.get();

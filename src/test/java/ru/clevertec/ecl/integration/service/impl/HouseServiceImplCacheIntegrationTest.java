@@ -74,32 +74,32 @@ public class HouseServiceImplCacheIntegrationTest {
 
         List<Callable<Void>> tasks = new ArrayList<>();
         tasks.add(() -> {
-            houseService.getById(uuidFirst);
+            houseService.getByUuid(uuidFirst);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(1000);
-            houseService.getById(uuidSecond);
+            houseService.getByUuid(uuidSecond);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(2000);
-            houseService.getById(uuidFirst);
+            houseService.getByUuid(uuidFirst);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(3000);
-            houseService.getById(uuidSecond);
+            houseService.getByUuid(uuidSecond);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(4000);
-            houseService.getById(uuidFirst);
+            houseService.getByUuid(uuidFirst);
             return null;
         });
         tasks.add(() -> {
             timeUnit.sleep(5000);
-            houseService.getById(uuidSecond);
+            houseService.getByUuid(uuidSecond);
             return null;
         });
 
@@ -166,10 +166,10 @@ public class HouseServiceImplCacheIntegrationTest {
                 .thenReturn(houseForUpdate);
 
         // when
-        Future<HouseResponse> getHouseResponse = executor.submit(() -> houseService.getById(uuidForGet));
+        Future<HouseResponse> getHouseResponse = executor.submit(() -> houseService.getByUuid(uuidForGet));
         Future<HouseResponse> createHouseResponse = executor.submit(() -> houseService.create(houseRequestForCreate));
         Future<HouseResponse> updateHouseResponse = executor.submit(() -> houseService.update(houseRequestForUpdate));
-        executor.submit(() -> houseService.deleteById(uuidForDelete));
+        executor.submit(() -> houseService.deleteByUuid(uuidForDelete));
 
         HouseResponse actualGetFirstHouseResponse = getHouseResponse.get();
         HouseResponse actualCreateHouseResponse = createHouseResponse.get();

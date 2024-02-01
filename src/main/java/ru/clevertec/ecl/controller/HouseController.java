@@ -3,6 +3,7 @@ package ru.clevertec.ecl.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,12 +48,13 @@ public class HouseController {
             summary = "Get house by UUID",
             description = "Get house by accept UUID as path variable",
             parameters = @Parameter(
-                    name = "UUID",
+                    name = "uuid",
                     schema = @Schema(
                             oneOf = UUID.class
                     ),
                     required = true,
-                    description = "Universal unique identifier of object"
+                    description = "Universal unique identifier of object",
+                    example = "ac602dde-9556-4ef5-954c-aeebc42c5056"
             ),
             responses = {
                     @ApiResponse(
@@ -78,9 +80,9 @@ public class HouseController {
                     )
             }
     )
-    @GetMapping("/{id}")
-    public ResponseEntity<HouseResponse> get(@PathVariable UUID id) {
-        HouseResponse houseResponse = houseService.getById(id);
+    @GetMapping("/{uuid}")
+    public ResponseEntity<HouseResponse> get(@PathVariable UUID uuid) {
+        HouseResponse houseResponse = houseService.getByUuid(uuid);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(houseResponse);
@@ -91,11 +93,17 @@ public class HouseController {
             summary = "Get houses",
             description = "Get houses",
             parameters = @Parameter(
-                    name = "Pageable",
+                    name = "pageable",
                     schema = @Schema(
                             implementation = Pageable.class
                     ),
-                    description = "Pageable object for pagination with size, page and sort parameters"
+                    description = "Pageable object for pagination with size, page and sort parameters",
+                    example = """
+                            {
+                              "page": 0,
+                              "size": 5,
+                            }
+                            """
             ),
             responses = {
                     @ApiResponse(
@@ -121,19 +129,26 @@ public class HouseController {
             description = "Get persons who living in that house",
             parameters = {
                     @Parameter(
-                            name = "UUID",
+                            name = "uuid",
                             schema = @Schema(
                                     oneOf = UUID.class
                             ),
                             required = true,
-                            description = "Universal unique identifier of object"
+                            description = "Universal unique identifier of object",
+                            example = "a85a721b-c62b-428e-a777-3daa72fc5e3a"
                     ),
                     @Parameter(
-                            name = "Pageable",
+                            name = "pageable",
                             schema = @Schema(
                                     implementation = Pageable.class
                             ),
-                            description = "Pageable object for pagination with size, page and sort parameters"
+                            description = "Pageable object for pagination with size, page and sort parameters",
+                            example = """
+                            {
+                              "page": 0,
+                              "size": 10,
+                            }
+                            """
                     ),
             },
             responses = {
@@ -146,9 +161,9 @@ public class HouseController {
                     )
             }
     )
-    @GetMapping("/{id}/persons")
-    public ResponseEntity<Page<PersonResponse>> getByHouse(@PathVariable UUID id, Pageable pageable) {
-        Page<PersonResponse> personsResponse = personService.getPersonsByHouseUuid(id, pageable);
+    @GetMapping("/{uuid}/persons")
+    public ResponseEntity<Page<PersonResponse>> getByHouse(@PathVariable UUID uuid, Pageable pageable) {
+        Page<PersonResponse> personsResponse = personService.getPersonsByHouseUuid(uuid, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personsResponse);
@@ -160,19 +175,26 @@ public class HouseController {
             description = "Get houses when accepted parameter name match with house fields",
             parameters = {
                     @Parameter(
-                            name = "UUID",
+                            name = "name",
                             schema = @Schema(
-                                    oneOf = UUID.class
+                                    oneOf = String.class
                             ),
                             required = true,
-                            description = "Universal unique identifier of object"
+                            description = "Universal unique identifier of object",
+                            example = "Чкалова"
                     ),
                     @Parameter(
-                            name = "Pageable",
+                            name = "pageable",
                             schema = @Schema(
                                     implementation = Pageable.class
                             ),
-                            description = "Pageable object for pagination with size, page and sort parameters"
+                            description = "Pageable object for pagination with size, page and sort parameters",
+                            example = """
+                            {
+                              "page": 0,
+                              "size": 10,
+                            }
+                            """
                     ),
             },
             responses = {
@@ -199,19 +221,26 @@ public class HouseController {
             description = "Get persons who living or have lived in that house",
             parameters = {
                     @Parameter(
-                            name = "UUID",
+                            name = "uuid",
                             schema = @Schema(
                                     oneOf = UUID.class
                             ),
                             required = true,
-                            description = "Universal unique identifier of object"
+                            description = "Universal unique identifier of object",
+                            example = "a85a721b-c62b-428e-a777-3daa72fc5e3a"
                     ),
                     @Parameter(
-                            name = "Pageable",
+                            name = "pageable",
                             schema = @Schema(
                                     implementation = Pageable.class
                             ),
-                            description = "Pageable object for pagination with size, page and sort parameters"
+                            description = "Pageable object for pagination with size, page and sort parameters",
+                            example = """
+                            {
+                              "page": 0,
+                              "size": 10,
+                            }
+                            """
                     ),
             },
             responses = {
@@ -224,9 +253,9 @@ public class HouseController {
                     )
             }
     )
-    @GetMapping("/{id}/tenants")
-    public ResponseEntity<Page<PersonResponse>> getTenantsByHouse(@PathVariable UUID id, Pageable pageable) {
-        Page<PersonResponse> personResponses = houseHistoryService.getTenantsByHouseUuid(id, pageable);
+    @GetMapping("/{uuid}/tenants")
+    public ResponseEntity<Page<PersonResponse>> getTenantsByHouse(@PathVariable UUID uuid, Pageable pageable) {
+        Page<PersonResponse> personResponses = houseHistoryService.getTenantsByHouseUuid(uuid, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personResponses);
@@ -238,19 +267,26 @@ public class HouseController {
             description = "Get persons who own or have owned that house",
             parameters = {
                     @Parameter(
-                            name = "UUID",
+                            name = "uuid",
                             schema = @Schema(
                                     oneOf = UUID.class
                             ),
                             required = true,
-                            description = "Universal unique identifier of object"
+                            description = "Universal unique identifier of object",
+                            example = "8126ee0f-edad-41fc-b845-41061439c652"
                     ),
                     @Parameter(
-                            name = "Pageable",
+                            name = "pageable",
                             schema = @Schema(
                                     implementation = Pageable.class
                             ),
-                            description = "Pageable object for pagination with size, page and sort parameters"
+                            description = "Pageable object for pagination with size, page and sort parameters",
+                            example = """
+                            {
+                              "page": 0,
+                              "size": 10,
+                            }
+                            """
                     ),
             },
             responses = {
@@ -263,9 +299,9 @@ public class HouseController {
                     )
             }
     )
-    @GetMapping("/{id}/owners")
-    public ResponseEntity<Page<PersonResponse>> getOwnersByHouse(@PathVariable UUID id, Pageable pageable) {
-        Page<PersonResponse> personResponses = houseHistoryService.getOwnersByHouseUuid(id, pageable);
+    @GetMapping("/{uuid}/owners")
+    public ResponseEntity<Page<PersonResponse>> getOwnersByHouse(@PathVariable UUID uuid, Pageable pageable) {
+        Page<PersonResponse> personResponses = houseHistoryService.getOwnersByHouseUuid(uuid, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(personResponses);
@@ -275,16 +311,25 @@ public class HouseController {
             method = "POST",
             summary = "Create house",
             description = "Create house of accepted house request body",
-            parameters = {
-                    @Parameter(
-                            name = "HouseRequest",
-                            required = true,
-                            schema = @Schema(
-                                    anyOf = HouseRequest.class
-                            ),
-                            description = "Object type of house request"
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "Object type of house request",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                        "country": "Беларусь",
+                                                        "area": "Витебская область",
+                                                        "city": "Витебск",
+                                                        "street": "Центральная",
+                                                        "number": "1"
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
-            },
+            ),
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -321,16 +366,26 @@ public class HouseController {
             method = "PUT",
             summary = "Update house",
             description = "Update house of accepted house request body",
-            parameters = {
-                    @Parameter(
-                            name = "HouseRequest",
-                            required = true,
-                            schema = @Schema(
-                                    anyOf = HouseRequest.class
-                            ),
-                            description = "Object type of house request"
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "Object type of house request",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                        "uuid": "78cdcc8d-07df-496b-86aa-65aadd4cfc77",
+                                                        "country": "Беларусь",
+                                                        "area": "Могилевская область",
+                                                        "city": "Могилев",
+                                                        "street": "Главная",
+                                                        "number": "222"
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
-            },
+            ),
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -368,16 +423,22 @@ public class HouseController {
             summary = "Update part of house",
             description = "Update part of house of accepted house request body",
 
-            parameters = {
-                    @Parameter(
-                            name = "HouseRequest",
-                            required = true,
-                            schema = @Schema(
-                                    anyOf = HouseRequest.class
-                            ),
-                            description = "Object type of house request"
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "Object type of house request",
+                    content = @Content(
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                        "uuid": "ac602dde-9556-4ef5-954c-aeebc42c5056",
+                                                        "number": "77"
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
-            },
+            ),
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -415,12 +476,13 @@ public class HouseController {
             summary = "Delete house by UUID",
             description = "Delete house by accept UUID as path variable",
             parameters = @Parameter(
-                    name = "UUID",
+                    name = "uuid",
                     schema = @Schema(
                             oneOf = UUID.class
                     ),
                     required = true,
-                    description = "Universal unique identifier of object"
+                    description = "Universal unique identifier of object",
+                    example = "b99d623b-4b7e-4c89-afce-2bed07ceb9fc"
             ),
             responses = {
                     @ApiResponse(
@@ -439,9 +501,9 @@ public class HouseController {
                     )
             }
     )
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        houseService.deleteById(id);
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
+        houseService.deleteByUuid(uuid);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

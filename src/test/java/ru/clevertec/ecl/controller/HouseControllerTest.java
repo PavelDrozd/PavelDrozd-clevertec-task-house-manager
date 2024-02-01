@@ -58,7 +58,7 @@ public class HouseControllerTest {
         UUID uuid = HouseTestBuilder.builder().build().buildHouseRequest().uuid();
         HouseResponse houseResponse = HouseTestBuilder.builder().build().buildHouseResponse();
 
-        when(houseService.getById(uuid))
+        when(houseService.getByUuid(uuid))
                 .thenReturn(houseResponse);
 
         // when, then
@@ -79,7 +79,7 @@ public class HouseControllerTest {
         // given
         UUID fakeUuid = UUID.fromString("00002dde-9556-4ef5-954c-aeebc42c5056");
 
-        when(houseService.getById(fakeUuid))
+        when(houseService.getByUuid(fakeUuid))
                 .thenThrow(NotFoundException.class);
 
         // when, then
@@ -293,7 +293,7 @@ public class HouseControllerTest {
         // given
         UUID fakeUuid = UUID.fromString("00002dde-9556-4ef5-954c-aeebc42c5056");
 
-        doThrow(NotFoundException.class).when(personService).deleteById(fakeUuid);
+        doThrow(NotFoundException.class).when(personService).deleteByUuid(fakeUuid);
 
         // when, then
         mockMvc.perform(delete("/houses/" + fakeUuid))

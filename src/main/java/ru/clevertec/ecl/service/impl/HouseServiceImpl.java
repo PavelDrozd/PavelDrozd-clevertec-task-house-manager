@@ -75,17 +75,17 @@ public class HouseServiceImpl implements HouseService {
     /**
      * Get House from repository by UUID and return it as HouseResponse.
      *
-     * @param id expected object type of UUID.
+     * @param uuid expected object type of UUID.
      * @return HouseResponse object.
      */
     @Get
     @Override
-    public HouseResponse getById(UUID id) {
-        log.debug("SERVICE: GET HOUSE BY UUID: " + id);
+    public HouseResponse getByUuid(UUID uuid) {
+        log.debug("SERVICE: GET HOUSE BY UUID: " + uuid);
 
-        return houseRepository.findByUuidAndDeletedFalse(id)
+        return houseRepository.findByUuidAndDeletedFalse(uuid)
                 .map(houseMapper::toHouseResponse)
-                .orElseThrow(() -> NotFoundException.of(House.class, id));
+                .orElseThrow(() -> NotFoundException.of(House.class, uuid));
     }
 
     /**
@@ -100,9 +100,9 @@ public class HouseServiceImpl implements HouseService {
     public HouseResponse update(HouseRequest houseRequest) {
         log.debug("SERVICE: UPDATE HOUSE: " + houseRequest);
 
-        UUID id = houseRequest.uuid();
-        House exist = houseRepository.findByUuidAndDeletedFalse(id)
-                .orElseThrow(() -> NotFoundException.of(House.class, id));
+        UUID uuid = houseRequest.uuid();
+        House exist = houseRepository.findByUuidAndDeletedFalse(uuid)
+                .orElseThrow(() -> NotFoundException.of(House.class, uuid));
 
         if (isChanged(exist, houseRequest)) {
             return houseMapper.toHouseResponse(exist);
@@ -126,9 +126,9 @@ public class HouseServiceImpl implements HouseService {
     public HouseResponse updatePart(HouseRequest houseRequest) {
         log.debug("SERVICE: UPDATE PART HOUSE: " + houseRequest);
 
-        UUID id = houseRequest.uuid();
-        House exist = houseRepository.findByUuidAndDeletedFalse(id)
-                .orElseThrow(() -> NotFoundException.of(House.class, id));
+        UUID uuid = houseRequest.uuid();
+        House exist = houseRepository.findByUuidAndDeletedFalse(uuid)
+                .orElseThrow(() -> NotFoundException.of(House.class, uuid));
 
         if (isChanged(exist, houseRequest)) {
             return houseMapper.toHouseResponse(exist);
@@ -143,16 +143,16 @@ public class HouseServiceImpl implements HouseService {
     /**
      * Delete House entity from repository by UUID.
      *
-     * @param id expected object type of UUID.
+     * @param uuid expected object type of UUID.
      */
     @Delete
     @Override
     @Transactional
-    public void deleteById(UUID id) {
-        log.debug("SERVICE: DELETE HOUSE BY UUID: " + id);
+    public void deleteByUuid(UUID uuid) {
+        log.debug("SERVICE: DELETE HOUSE BY UUID: " + uuid);
 
-        House houseForDelete = houseRepository.findByUuidAndDeletedFalse(id)
-                .orElseThrow(() -> NotFoundException.of(House.class, id));
+        House houseForDelete = houseRepository.findByUuidAndDeletedFalse(uuid)
+                .orElseThrow(() -> NotFoundException.of(House.class, uuid));
         houseForDelete.setDeleted(true);
         houseRepository.save(houseForDelete);
     }
@@ -160,15 +160,15 @@ public class HouseServiceImpl implements HouseService {
     /**
      * Get houses from repository by Person UUID.
      *
-     * @param id       expected object type of UUID.
+     * @param uuid       expected object type of UUID.
      * @param pageable expected an object type of Pageable.
      * @return List of HouseResponse objects.
      */
     @Override
-    public Page<HouseResponse> getHousesByPersonUuid(UUID id, Pageable pageable) {
-        log.debug("SERVICE: FIND HOUSES BY PERSON UUID: " + id + " WITH PAGEABLE: " + pageable);
+    public Page<HouseResponse> getHousesByPersonUuid(UUID uuid, Pageable pageable) {
+        log.debug("SERVICE: FIND HOUSES BY PERSON UUID: " + uuid + " WITH PAGEABLE: " + pageable);
 
-        return houseRepository.findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalse(id, pageable)
+        return houseRepository.findByTenants_UuidAndDeletedFalseAndTenants_DeletedFalse(uuid, pageable)
                 .map(houseMapper::toHouseResponse);
     }
 
