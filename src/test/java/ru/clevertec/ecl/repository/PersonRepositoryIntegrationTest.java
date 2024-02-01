@@ -2,11 +2,12 @@ package ru.clevertec.ecl.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.PostgresContainerInitializer;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.entity.Person;
 import ru.clevertec.ecl.enums.Sex;
@@ -15,10 +16,12 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@Transactional
+@SpringBootTest
+@ActiveProfiles("test")
 @RequiredArgsConstructor
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class PersonRepositoryIntegrationTest extends PostgresContainerInitializer {
+@Sql(scripts = "classpath:db/data.sql")
+public class PersonRepositoryIntegrationTest {
 
     private final PersonRepository personRepository;
 

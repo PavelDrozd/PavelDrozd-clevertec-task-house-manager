@@ -3,6 +3,7 @@ package ru.clevertec.ecl.data;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.entity.House;
@@ -46,6 +47,28 @@ public class HouseTestBuilder {
         return new House(id, uuid, country, area, city, street, number, createDate, deleted, null);
     }
 
+    public House buildHouseFirst() {
+        return House.builder()
+                .uuid(UUID.fromString("061783b1-c63b-4fb2-a9d0-9d90842911a2"))
+                .country("Беларусь")
+                .area("Минская область")
+                .city("Солигорск")
+                .street("К.Заслонова")
+                .number("52")
+                .build();
+    }
+
+    public House buildHouseSecond() {
+        return House.builder()
+                .uuid(UUID.fromString("a85a721b-c62b-428e-a777-3daa72fc5e3a"))
+                .country("Беларусь")
+                .area("Минская область")
+                .city("Минск")
+                .street("проспект Рокоссовского")
+                .number("57")
+                .build();
+    }
+
     public HouseRequest buildHouseRequest() {
         return new HouseRequest(uuid, country, area, city, street, number);
     }
@@ -54,12 +77,34 @@ public class HouseTestBuilder {
         return new HouseResponse(uuid, country, area, city, street, number, createDate, null);
     }
 
+    public HouseResponse buildHouseResponseFirst() {
+        return new HouseResponse(UUID.fromString("061783b1-c63b-4fb2-a9d0-9d90842911a2"),
+                "Беларусь",
+                "Минская область",
+                "Солигорск",
+                "К.Заслонова",
+                "52",
+                null,
+                null);
+    }
+
+    public HouseResponse buildHouseResponseSecond() {
+        return new HouseResponse(UUID.fromString("a85a721b-c62b-428e-a777-3daa72fc5e3a"),
+                "Беларусь",
+                "Минская область",
+                "Минск",
+                "проспект Рокоссовского",
+                "57",
+                null,
+                null);
+    }
+
     public List<House> buildHouseList() {
         return List.of(buildHouse());
     }
 
     public Page<House> buildHousePage() {
-        return new PageImpl<>(buildHouseList());
+        return new PageImpl<>(buildHouseList(), Pageable.ofSize(1), 1);
     }
 
     public List<HouseRequest> buildHouseRequestList() {
@@ -71,7 +116,7 @@ public class HouseTestBuilder {
     }
 
     public Page<HouseResponse> buildHouseResponsePage() {
-        return new PageImpl<>(buildHouseResponseList());
+        return new PageImpl<>(buildHouseResponseList(), Pageable.ofSize(1), 1);
     }
 
     public House buildHouseForCreate() {
@@ -141,6 +186,19 @@ public class HouseTestBuilder {
                 .build().buildHouseRequest();
     }
 
+    public HouseRequest buildHouseRequestForUpdatePart() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("78cdcc8d-07df-496b-86aa-65aadd4cfc77"))
+                .withCountry(null)
+                .withArea(null)
+                .withCity("Могилев")
+                .withStreet("Петрозаводская")
+                .withNumber("3")
+                .withCreateDate(null)
+                .build().buildHouseRequest();
+    }
+
     public HouseRequest buildHouseRequestForDelete() {
         return HouseTestBuilder.builder()
                 .withId(null)
@@ -153,6 +211,7 @@ public class HouseTestBuilder {
                 .withCreateDate(null)
                 .build().buildHouseRequest();
     }
+
     public HouseResponse buildHouseResponseForCreate() {
         return HouseTestBuilder.builder()
                 .withId(null)
@@ -172,6 +231,19 @@ public class HouseTestBuilder {
                 .withUuid(UUID.fromString("78cdcc8d-07df-496b-86aa-65aadd4cfc77"))
                 .withCountry("Беларусь")
                 .withArea("Могилевская область")
+                .withCity("Могилев")
+                .withStreet("Петрозаводская")
+                .withNumber("3")
+                .withCreateDate(null)
+                .build().buildHouseResponse();
+    }
+
+    public HouseResponse buildHouseResponseForUpdatePart() {
+        return HouseTestBuilder.builder()
+                .withId(null)
+                .withUuid(UUID.fromString("78cdcc8d-07df-496b-86aa-65aadd4cfc77"))
+                .withCountry(country)
+                .withArea(area)
                 .withCity("Могилев")
                 .withStreet("Петрозаводская")
                 .withNumber("3")

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    username: test
-    password: test
+    url: jdbc:tc:postgresql:15.1-alpine://items
   liquibase:
-    drop-first: true
+    enabled: true
+    change-log: db/changelog/db.changelog-master-test.yml

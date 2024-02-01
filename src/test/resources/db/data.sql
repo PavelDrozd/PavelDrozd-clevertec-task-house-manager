@@ -1,8 +1,3 @@
-TRUNCATE table house_histories;
-TRUNCATE table persons CASCADE;
-TRUNCATE table houses CASCADE;
-TRUNCATE table owner_house;
-
 INSERT INTO houses ("uuid", country, area, city, street, "number", create_date)
 VALUES ('ac602dde-9556-4ef5-954c-aeebc42c5056', 'Беларусь', 'Минская область', 'Минск', 'Разинская', '99', '2024-01-03T09:12:15.156'),
         ('061783b1-c63b-4fb2-a9d0-9d90842911a2', 'Беларусь', 'Минская область', 'Солигорск', 'К.Заслонова', '52', '2024-01-03T09:12:15.156'),
