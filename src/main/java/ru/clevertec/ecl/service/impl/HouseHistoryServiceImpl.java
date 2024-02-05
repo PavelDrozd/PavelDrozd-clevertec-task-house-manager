@@ -1,11 +1,11 @@
 package ru.clevertec.ecl.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.clevertec.ecl.aspect.annotation.Logger;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.enums.Type;
@@ -20,7 +20,7 @@ import java.util.UUID;
 /**
  * Implementation of HouseHistoryService interface for process HouseHistory data objects.
  */
-@Slf4j
+@Logger
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -47,8 +47,6 @@ public class HouseHistoryServiceImpl implements HouseHistoryService {
      */
     @Override
     public Page<PersonResponse> getTenantsByHouseUuid(UUID uuid, Pageable pageable) {
-        log.debug("SERVICE: GET ALL HISTORY OF TENANTS BY HOUSE UUID: " + uuid + " WITH PAGEABLE: " + pageable);
-
         return personRepository.findPersonsByHouseUuidAndType(uuid, Type.TENANT, pageable)
                 .map(personMapper::toPersonResponse);
     }
@@ -62,8 +60,6 @@ public class HouseHistoryServiceImpl implements HouseHistoryService {
      */
     @Override
     public Page<PersonResponse> getOwnersByHouseUuid(UUID uuid, Pageable pageable) {
-        log.debug("SERVICE: GET ALL HISTORY OF OWNERS BY HOUSE UUID: " + uuid + " WITH PAGEABLE: " + pageable);
-
         return personRepository.findPersonsByHouseUuidAndType(uuid, Type.OWNER, pageable)
                 .map(personMapper::toPersonResponse);
     }
@@ -77,8 +73,6 @@ public class HouseHistoryServiceImpl implements HouseHistoryService {
      */
     @Override
     public Page<HouseResponse> getHousesByTenantUuid(UUID uuid, Pageable pageable) {
-        log.debug("SERVICE: GET ALL HISTORY OF HOUSES BY TENANT UUID: " + uuid + " WITH PAGEABLE: " + pageable);
-
         return houseRepository.findHousesByPersonUuidAndType(uuid, Type.TENANT, pageable)
                 .map(houseMapper::toHouseResponse);
     }
@@ -92,8 +86,6 @@ public class HouseHistoryServiceImpl implements HouseHistoryService {
      */
     @Override
     public Page<HouseResponse> getHousesByOwnerUuid(UUID uuid, Pageable pageable) {
-        log.debug("SERVICE: GET ALL HISTORY OF HOUSES BY OWNER UUID: " + uuid + " WITH PAGEABLE: " + pageable);
-
         return houseRepository.findHousesByPersonUuidAndType(uuid, Type.OWNER, pageable)
                 .map(houseMapper::toHouseResponse);
     }

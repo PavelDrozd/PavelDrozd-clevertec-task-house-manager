@@ -1,7 +1,6 @@
 package ru.clevertec.ecl.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -9,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.aspect.annotation.Create;
 import ru.clevertec.ecl.aspect.annotation.Delete;
 import ru.clevertec.ecl.aspect.annotation.Get;
+import ru.clevertec.ecl.aspect.annotation.Logger;
 import ru.clevertec.ecl.aspect.annotation.Update;
 import ru.clevertec.ecl.data.request.PersonRequest;
 import ru.clevertec.ecl.data.response.PersonResponse;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Implementation of PersonService interface for process Person data objects.
  */
-@Slf4j
+@Logger
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -59,8 +59,6 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public PersonResponse create(PersonRequest personRequest) {
-        log.debug("SERVICE: CREATE PERSON: " + personRequest);
-
         UUID houseId = personRequest.tenantHouseUuidRequest();
         House house = houseRepository.findByUuidAndDeletedFalse(houseId)
                 .orElseThrow(() -> NotFoundException.of(House.class, houseId));
@@ -80,8 +78,6 @@ public class PersonServiceImpl implements PersonService {
      */
     @Override
     public Page<PersonResponse> getAll(Pageable pageable) {
-        log.debug("SERVICE: FIND ALL PERSONS WITH PAGEABLE: " + pageable);
-
         return personRepository.findByDeletedFalse(pageable)
                 .map(personMapper::toPersonResponse);
     }
@@ -95,8 +91,6 @@ public class PersonServiceImpl implements PersonService {
     @Get
     @Override
     public PersonResponse getByUuid(UUID uuid) {
-        log.debug("SERVICE: GET PERSON BY UUID: " + uuid);
-
         return personRepository.findByUuidAndDeletedFalse(uuid)
                 .map(personMapper::toPersonResponse)
                 .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
@@ -112,8 +106,6 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public PersonResponse update(PersonRequest personRequest) {
-        log.debug("SERVICE: UPDATE PERSON: " + personRequest);
-
         UUID uuid = personRequest.uuid();
         Person exist = personRepository.findByUuidAndDeletedFalse(uuid)
                 .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
@@ -139,8 +131,6 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public PersonResponse updatePart(PersonRequest personRequest) {
-        log.debug("SERVICE: UPDATE PERSON: " + personRequest);
-
         UUID uuid = personRequest.uuid();
         Person exist = personRepository.findByUuidAndDeletedFalse(uuid)
                 .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
@@ -164,7 +154,6 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public void deleteByUuid(UUID uuid) {
-        log.debug("SERVICE: DELETE PERSON BY UUID: " + uuid);
         Person personForDelete = personRepository.findByUuidAndDeletedFalse(uuid)
                 .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
         personForDelete.setDeleted(true);
@@ -174,14 +163,12 @@ public class PersonServiceImpl implements PersonService {
     /**
      * Get residents of a house from repository by House UUID.
      *
-     * @param uuid       expected object type of UUID.
+     * @param uuid     expected object type of UUID.
      * @param pageable expected an object type of Pageable.
      * @return List of PersonResponse objects.
      */
     @Override
     public Page<PersonResponse> getPersonsByHouseUuid(UUID uuid, Pageable pageable) {
-        log.debug("SERVICE: GET PERSONS BY HOUSE UUID: " + uuid + " WITH PAGEABLE: " + pageable);
-
         return personRepository.findByOwnerHouses_UuidAndDeletedFalseAndOwnerHouses_DeletedFalse(uuid, pageable)
                 .map(personMapper::toPersonResponse);
     }
@@ -195,8 +182,6 @@ public class PersonServiceImpl implements PersonService {
      */
     @Override
     public Page<PersonResponse> getByNameMatches(String name, Pageable pageable) {
-        log.debug("SERVICE: GET PERSONS BY NAME MATCHES: " + name + " WITH PAGEABLE: " + pageable);
-
         return personRepository.findByNameMatches(name, pageable)
                 .map(personMapper::toPersonResponse);
     }
