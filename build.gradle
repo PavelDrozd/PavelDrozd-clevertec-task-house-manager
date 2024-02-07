@@ -19,18 +19,21 @@ configurations {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 ext {
     mapstructVersion = '1.5.5.Final'
     springdocOpenapiStarterVersion = '2.2.0'
+    springBootStarterVersion = '3.2.1'
 }
 
 dependencies {
 
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
+    implementation "ru.clevertec:spring-boot-starter-exception-handler:${springBootStarterVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

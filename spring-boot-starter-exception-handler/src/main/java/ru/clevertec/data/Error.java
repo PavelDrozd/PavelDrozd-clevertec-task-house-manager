@@ -1,21 +1,21 @@
-package ru.clevertec.ecl.data.error;
+package ru.clevertec.data;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 @Data
-public class ErrorDto {
+public class Error {
 
     private final String errorMessage;
 
     private final Integer errorCode;
 
-    public ErrorDto(HttpStatus httpStatus) {
+    public Error(HttpStatus httpStatus) {
         errorMessage = httpStatus.getReasonPhrase();
         errorCode = httpStatus.value();
     }
 
-    public ErrorDto(String errorMessage, Integer errorCode) {
+    public Error(String errorMessage, Integer errorCode) {
         this.errorMessage = errorMessage;
         this.errorCode = errorCode;
     }

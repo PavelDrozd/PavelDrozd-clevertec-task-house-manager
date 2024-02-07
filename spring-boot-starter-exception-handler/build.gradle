@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "8.4"
+    id 'maven-publish'
+}
+
+group = 'ru.clevertec'
+version = '3.2.1'
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = group
+            artifactId = project.name
+            version = version
+        }
+    }
+}
+
+ext {
+    springBootVersion = '3.2.1'
+}
+
+dependencies {
+
+    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.named("build") {
+    finalizedBy('publishToMavenLocal')
+}

@@ -1,6 +1,6 @@
-package ru.clevertec.ecl.exception;
+package ru.clevertec.exception;
 
-public class ValidationException extends ApplicationException {
+public class ValidationException extends RuntimeException {
 
     public ValidationException(String message) {
         super(message);
