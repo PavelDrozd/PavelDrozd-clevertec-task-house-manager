@@ -14,10 +14,10 @@ import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.entity.House;
-import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.HouseMapper;
 import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
+import ru.clevertec.exception.NotFoundException;
 
 import java.util.Optional;
 import java.util.UUID;

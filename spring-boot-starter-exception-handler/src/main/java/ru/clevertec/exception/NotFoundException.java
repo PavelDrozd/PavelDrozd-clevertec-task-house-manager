@@ -1,6 +1,6 @@
-package ru.clevertec.ecl.exception;
+package ru.clevertec.exception;
 
-public class NotFoundException extends ApplicationException {
+public class NotFoundException extends RuntimeException {
 
     public NotFoundException(String message) {
         super(message);

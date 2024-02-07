@@ -1,2 +1,3 @@
 rootProject.name = 'clevertec-task-house-manager'
+include 'spring-boot-starter-exception-handler'
 

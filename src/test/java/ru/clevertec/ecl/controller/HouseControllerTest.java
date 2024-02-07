@@ -6,23 +6,24 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.clevertec.config.ExceptionHandlerAutoConfiguration;
 import ru.clevertec.ecl.data.HouseTestBuilder;
 import ru.clevertec.ecl.data.PersonTestBuilder;
 import ru.clevertec.ecl.data.request.HouseRequest;
 import ru.clevertec.ecl.data.response.HouseResponse;
 import ru.clevertec.ecl.data.response.PersonResponse;
-import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.service.HouseHistoryService;
 import ru.clevertec.ecl.service.HouseService;
 import ru.clevertec.ecl.service.PersonService;
+import ru.clevertec.exception.NotFoundException;
 
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -34,8 +35,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(HouseController.class)
+
 @RequiredArgsConstructor
+@WebMvcTest(HouseController.class)
+@Import(ExceptionHandlerAutoConfiguration.class)
 public class HouseControllerTest {
 
     private final MockMvc mockMvc;
@@ -286,18 +289,4 @@ public class HouseControllerTest {
         mockMvc.perform(delete("/houses/" + uuid))
                 .andExpect(status().is2xxSuccessful());
     }
-
-    @SneakyThrows
-    @Test
-    void deleteShouldReturnStatusNotFound() {
-        // given
-        UUID fakeUuid = UUID.fromString("00002dde-9556-4ef5-954c-aeebc42c5056");
-
-        doThrow(NotFoundException.class).when(personService).deleteByUuid(fakeUuid);
-
-        // when, then
-        mockMvc.perform(delete("/houses/" + fakeUuid))
-                .andExpect(status().is2xxSuccessful());
-    }
-
 }

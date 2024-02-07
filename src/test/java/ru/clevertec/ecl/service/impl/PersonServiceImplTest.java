@@ -15,11 +15,11 @@ import ru.clevertec.ecl.data.request.PersonRequest;
 import ru.clevertec.ecl.data.response.PersonResponse;
 import ru.clevertec.ecl.entity.House;
 import ru.clevertec.ecl.entity.Person;
-import ru.clevertec.ecl.exception.NotFoundException;
 import ru.clevertec.ecl.mapper.HouseMapper;
 import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 import ru.clevertec.ecl.repository.PersonRepository;
+import ru.clevertec.exception.NotFoundException;
 
 import java.util.Optional;
 import java.util.UUID;
