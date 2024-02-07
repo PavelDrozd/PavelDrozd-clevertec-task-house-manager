@@ -22,7 +22,6 @@ import ru.clevertec.ecl.service.PersonService;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -283,16 +282,5 @@ public class PersonControllerTest {
         // when, then
         mockMvc.perform(delete("/persons/" + uuid))
                 .andExpect(status().is2xxSuccessful());
-    }    @SneakyThrows
-    @Test
-    void deleteShouldReturnStatusNotFound() {
-        // given
-        UUID fakeUuid = UUID.fromString("00017dfd-a27d-45b6-8c72-a15538b8216e");
-
-        doThrow(NotFoundException.class).when(personService).deleteByUuid(fakeUuid);
-
-        // when, then
-        mockMvc.perform(delete("/persons/" + fakeUuid))
-                .andExpect(status().isNotFound());
     }
 }

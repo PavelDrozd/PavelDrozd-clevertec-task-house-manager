@@ -490,14 +490,7 @@ public class PersonController {
             responses = {
                     @ApiResponse(
                             description = "Get house",
-                            responseCode = "200",
-                            content = @Content(
-                                    mediaType = "application/json"
-                            )
-                    ),
-                    @ApiResponse(
-                            description = "Not found",
-                            responseCode = "404",
+                            responseCode = "204",
                             content = @Content(
                                     mediaType = "application/json"
                             )

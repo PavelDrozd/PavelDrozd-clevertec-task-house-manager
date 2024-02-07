@@ -19,6 +19,7 @@ import ru.clevertec.ecl.mapper.PersonMapper;
 import ru.clevertec.ecl.repository.HouseRepository;
 import ru.clevertec.ecl.service.HouseService;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -77,9 +78,14 @@ public class HouseServiceImpl implements HouseService {
     @Get
     @Override
     public HouseResponse getByUuid(UUID uuid) {
-        return houseRepository.findByUuidAndDeletedFalse(uuid)
-                .map(houseMapper::toHouseResponse)
-                .orElseThrow(() -> NotFoundException.of(House.class, uuid));
+        Optional<House> house = houseRepository.findByUuidAndDeletedFalse(uuid);
+
+        if (house.isEmpty()) {
+            throw NotFoundException.of(House.class, uuid);
+        }
+
+        return house.map(houseMapper::toHouseResponse)
+                .orElseThrow();
     }
 
     /**
@@ -139,10 +145,14 @@ public class HouseServiceImpl implements HouseService {
     @Override
     @Transactional
     public void deleteByUuid(UUID uuid) {
-        House houseForDelete = houseRepository.findByUuidAndDeletedFalse(uuid)
-                .orElseThrow(() -> NotFoundException.of(House.class, uuid));
-        houseForDelete.setDeleted(true);
-        houseRepository.save(houseForDelete);
+        Optional<House> house = houseRepository.findByUuidAndDeletedFalse(uuid);
+
+        if (house.isPresent()) {
+            House houseForDelete = house.orElseThrow();
+            houseForDelete.setDeleted(true);
+
+            houseRepository.save(houseForDelete);
+        }
     }
 
     /**

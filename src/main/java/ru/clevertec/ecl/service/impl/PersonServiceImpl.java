@@ -91,9 +91,14 @@ public class PersonServiceImpl implements PersonService {
     @Get
     @Override
     public PersonResponse getByUuid(UUID uuid) {
-        return personRepository.findByUuidAndDeletedFalse(uuid)
-                .map(personMapper::toPersonResponse)
-                .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
+        Optional<Person> person = personRepository.findByUuidAndDeletedFalse(uuid);
+
+        if (person.isEmpty()) {
+            throw NotFoundException.of(Person.class, uuid);
+        }
+
+        return person.map(personMapper::toPersonResponse)
+                .orElseThrow();
     }
 
     /**
@@ -154,10 +159,14 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public void deleteByUuid(UUID uuid) {
-        Person personForDelete = personRepository.findByUuidAndDeletedFalse(uuid)
-                .orElseThrow(() -> NotFoundException.of(Person.class, uuid));
-        personForDelete.setDeleted(true);
-        personRepository.save(personForDelete);
+        Optional<Person> person = personRepository.findByUuidAndDeletedFalse(uuid);
+
+        if (person.isPresent()) {
+            Person personForDelete = person.get();
+            personForDelete.setDeleted(true);
+
+            personRepository.save(personForDelete);
+        }
     }
 
     /**
